@@ -1,11 +1,11 @@
 import test_arrays
 
-
-selected_cell = [2,2]
-old_array = test_arrays.arr_test_count_4
+# selected_cell = [2,2]
+old_array = test_arrays.arr_vert
 
 new_array = [[0 for i in range(test_arrays.cols)] for j in range(test_arrays.rows)]
 
+print()
 for row in old_array:
     print(row)
 
@@ -57,10 +57,26 @@ def decide_fate_cell(arr, target_cell, number_of_neighbours):
         if (number_of_neighbours == 3):
             arr[targetRow][targetCol] = 1
 
-number_of_neighbours = count_neighbours(old_array, selected_cell)
-print(number_of_neighbours)
+def loop_through_array(old_array):
+    rows = len(old_array)
 
-decide_fate_cell(new_array, selected_cell, number_of_neighbours)
+    # for now, skip cells at the edges
+    for curRow in range (1, rows - 1):
+        for curCol in range (1, rows - 1):
+            selected_cell = [curRow, curCol]
+            number_of_neighbours = count_neighbours(old_array, selected_cell)
+            print(number_of_neighbours)
+
+            decide_fate_cell(new_array, selected_cell, number_of_neighbours)
+            for row in new_array:
+                print(row)
+
+loop_through_array(old_array)
+
+# number_of_neighbours = count_neighbours(old_array, selected_cell)
+# print(number_of_neighbours)
+
+# decide_fate_cell(new_array, selected_cell, number_of_neighbours)
 
 for row in new_array:
     print(row)
