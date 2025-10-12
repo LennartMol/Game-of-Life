@@ -1,0 +1,48 @@
+# empty 2d array
+rows, cols = (5, 5)
+arr = [[0 for i in range(cols)] for j in range(rows)]
+
+# array with 3 vertical cells filled
+arr_vert = [
+    [0, 0, 0, 0, 0],
+    [0, 0, 1, 0, 0],
+    [0, 0, 1, 0, 0],
+    [0, 0, 1, 0, 0],
+    [0, 0, 0, 0, 0]
+]
+
+# array for testing count_neighbours
+arr_test_count = [
+    [0, 0, 0, 0, 0],
+    [0, 1, 0, 0, 0],
+    [0, 0, 1, 0, 0],
+    [0, 0, 1, 0, 0],
+    [0, 0, 0, 0, 0]
+]
+
+# array for testing count_neighbours
+arr_test_count_2 = [
+    [0, 0, 0, 0, 0],
+    [0, 1, 0, 1, 0],
+    [0, 0, 1, 1, 0],
+    [0, 0, 1, 0, 0],
+    [0, 0, 0, 0, 0]
+]
+
+# array for testing count_neighbours
+arr_test_count_3 = [
+    [0, 0, 0, 0, 0],
+    [0, 1, 0, 0, 0],
+    [0, 0, 0, 1, 0],
+    [0, 0, 1, 0, 0],
+    [0, 0, 0, 0, 0]
+]
+
+# array for testing count_neighbours
+arr_test_count_4 = [
+    [0, 0, 0, 0, 0],
+    [0, 1, 0, 0, 0],
+    [0, 0, 1, 0, 0],
+    [0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0]
+]
