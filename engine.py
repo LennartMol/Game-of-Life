@@ -1,14 +1,5 @@
 import test_arrays
-
-# selected_cell = [2,2]
-old_array = test_arrays.arr_vert
-
-new_array = [[0 for i in range(test_arrays.cols)] for j in range(test_arrays.rows)]
-
-print()
-for row in old_array:
-    print(row)
-
+import time
 
 # rules
 # Any live cell with fewer than two live neighbours dies, as if by underpopulation.
@@ -28,7 +19,6 @@ def count_neighbours(arr, target_cell):
                 total_neighbours += arr[selectedRow][selectedCol]
 
     return total_neighbours
-
 
 def decide_fate_cell(newArr, oldArr, target_cell, number_of_neighbours):
     targetRow = target_cell[0]
@@ -57,7 +47,9 @@ def decide_fate_cell(newArr, oldArr, target_cell, number_of_neighbours):
         if (number_of_neighbours == 3):
             newArr[targetRow][targetCol] = 1
 
-def loop_through_array(old_array):
+    return newArr
+
+def loop_through_array(old_array, n_array):
     rows = len(old_array)
 
     # for now, skip cells at the edges
@@ -65,18 +57,32 @@ def loop_through_array(old_array):
         for curCol in range (1, rows - 1):
             selected_cell = [curRow, curCol]
             number_of_neighbours = count_neighbours(old_array, selected_cell)
-            print(number_of_neighbours)
+            # print(number_of_neighbours)
 
-            decide_fate_cell(new_array, old_array, selected_cell, number_of_neighbours)
-            for row in new_array:
-                print(row)
+            n_array = decide_fate_cell(n_array, old_array, selected_cell, number_of_neighbours)
+            # for row in new_array:
+            #    print(row)
+    
+    print()
+    for row in n_array:
+        print(row)
+    return n_array
 
-loop_through_array(old_array)
+def loop():
+    old_array = test_arrays.arr_vert
 
-# number_of_neighbours = count_neighbours(old_array, selected_cell)
-# print(number_of_neighbours)
+    new_array = [[0 for i in range(test_arrays.cols)] for j in range(test_arrays.rows)]
+    
 
-# decide_fate_cell(new_array, selected_cell, number_of_neighbours)
+    print()
+    for row in old_array:
+        print(row)
+    
+    
+    while True:
+        temp_array = loop_through_array(old_array, new_array)
+        old_array = temp_array
+        new_array = [[0 for i in range(test_arrays.cols)] for j in range(test_arrays.rows)]
+        time.sleep(1)
 
-for row in new_array:
-    print(row)
+loop()
