@@ -24,7 +24,7 @@ def count_neighbours(arr, target_cell):
         for row in range(-1, 2):
             selectedRow = targetRow + row
             # prevent counting the cell itself
-            if not (selectedCol == targetRow and selectedRow == targetCol):
+            if not (selectedCol == targetCol and selectedRow == targetRow):
                 total_neighbours += arr[selectedRow][selectedCol]
 
     return total_neighbours
