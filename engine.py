@@ -69,9 +69,11 @@ def loop_through_array(old_array, n_array):
     return n_array
 
 def loop():
-    old_array = test_arrays.arr_vert
+    old_array = test_arrays.pulsar
+    row_size = len(old_array)
+    col_size = len(old_array)
 
-    new_array = [[0 for i in range(test_arrays.cols)] for j in range(test_arrays.rows)]
+    new_array = [[0 for i in range(col_size)] for j in range(row_size)]
     
 
     print()
@@ -82,7 +84,7 @@ def loop():
     while True:
         temp_array = loop_through_array(old_array, new_array)
         old_array = temp_array
-        new_array = [[0 for i in range(test_arrays.cols)] for j in range(test_arrays.rows)]
+        new_array = [[0 for i in range(col_size)] for j in range(row_size)]
         time.sleep(1)
 
 loop()
