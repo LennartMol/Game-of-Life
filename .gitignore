@@ -215,3 +215,4 @@ Scripts/pip3.11.exe
 Scripts/pip3.exe
 Scripts/python.exe
 Scripts/pythonw.exe
+.vscode/launch.json

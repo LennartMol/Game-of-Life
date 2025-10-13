@@ -11,7 +11,7 @@ class Window():
         self.number_of_rows = self.game_engine.number_of_rows
         self.number_of_columns = self.game_engine.number_of_columns
         self.cell_size = cell_size
-        self.array = self.game_engine.old_generation_array
+
 
         # window
         self.title = window_title
@@ -26,6 +26,7 @@ class Window():
         self.window.clear()
         for rect in self.rectangles:
             rect.draw()
+        self.create_rectangles()
 
     def create_rectangles(self):
         self.rectangles = []
@@ -33,6 +34,6 @@ class Window():
             for col in range(self.number_of_columns):
                 x = col * self.cell_size
                 y = row * self.cell_size
-                color = (255, 255, 255) if self.array[row][col] else (30, 30, 30)
+                color = (255, 255, 255) if self.game_engine.old_generation_array[row][col] else (0, 0, 0)
                 rect = pyglet.shapes.Rectangle(x, y, self.cell_size, self.cell_size, color=color)
                 self.rectangles.append(rect)

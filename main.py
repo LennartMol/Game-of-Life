@@ -4,7 +4,7 @@ import pyglet
 import window
 
 game_engine = engine.Engine(array=test_arrays.pulsar,
-                            debug=True)
+                            debug=False)
 
 game_window = window.Window(game_engine=game_engine,
                             cell_size=20,
