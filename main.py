@@ -3,7 +3,7 @@ import test_arrays
 import pyglet
 import window
 
-game_engine = engine.Engine(array=test_arrays.pulsar,
+game_engine = engine.Engine(array=test_arrays.glider_gun_array,
                             debug=False)
 
 game_window = window.Window(game_engine=game_engine,
