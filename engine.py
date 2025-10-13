@@ -113,4 +113,4 @@ class Engine():
 
         temp_array = self.loop_through_array(self.old_generation_array, self.next_generation_array)
         self.old_generation_array = temp_array
-        self.next_generation_array = copy.deepcopy(self.new_array)
+        self.next_generation_array = [[0]*self.number_of_columns for _ in range(self.number_of_rows)]
