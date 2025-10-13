@@ -1,5 +1,6 @@
 import test_arrays
 import time
+import copy
 
 class Engine():
 
@@ -10,9 +11,9 @@ class Engine():
         self.number_of_columns = len(array)
         
         # Arrays
-        self.original_array = array
-        self.old_array = array
+        self.old_generation_array = array
         self.new_array = [[0 for i in range(self.number_of_columns)] for j in range(self.number_of_rows)]
+        self.next_generation_array = copy.deepcopy(self.new_array)
 
         # simulation speed
         self.generations_per_second = 0
@@ -74,33 +75,44 @@ class Engine():
         for curRow in range (1, rows - 1):
             for curCol in range (1, rows - 1):
                 selected_cell = [curRow, curCol]
+                if(self.debug == 'detail'):
+                    print("Selected cell: " +str(selected_cell))
+                    self.print_array(old_array, selected_cell = selected_cell)
+                    
                 number_of_neighbours = self.count_neighbours(old_array, selected_cell)
-                # print(number_of_neighbours)
-
+                if(self.debug == 'detail'):
+                    print("Number of neighbours: " + str(number_of_neighbours))
+                    print()
+                
                 n_array = self.decide_fate_cell(n_array, old_array, selected_cell, number_of_neighbours)
-                # for row in new_array:
-                #    print(row)
         
-        print()
-        for row in n_array:
-            print(row)
+        if(self.debug):
+            print() 
+            print("Old generation array: ")        
+            self.print_array(old_array)
+        
+        if(self.debug):
+            print() 
+            print("Next generation array: ")        
+            self.print_array(n_array)
+
+
         return n_array
-
-    def loop(self):
-        old_array = self.original_array
-        row_size = len(old_array)
-        col_size = len(old_array)
-
-        new_array = [[0 for i in range(col_size)] for j in range(row_size)]
+    
+    def print_array(self, array, selected_cell = False):
         
+        array_to_be_printed = copy.deepcopy(array)
 
-        print()
-        for row in old_array:
+        if(selected_cell != False):
+            selRow = selected_cell[0]
+            selCol = selected_cell[1]
+            array_to_be_printed[selRow][selCol] = 'x'
+
+        for row in array_to_be_printed:
             print(row)
-        
-        
-        while True:
-            temp_array = self.loop_through_array(old_array, new_array)
-            old_array = temp_array
-            new_array = [[0 for i in range(col_size)] for j in range(row_size)]
-            time.sleep(1)
+
+    def simulate_single_generation(self):
+
+        temp_array = self.loop_through_array(self.old_generation_array, self.next_generation_array)
+        self.old_generation_array = temp_array
+        self.next_generation_array = copy.deepcopy(self.new_array)
