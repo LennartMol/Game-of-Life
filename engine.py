@@ -1,5 +1,3 @@
-import test_arrays
-import time
 import copy
 
 class Engine():
