@@ -29,9 +29,12 @@ class Window():
     
     def draw_window(self):
         self.window.clear()
-        for rect in self.rectangles:
+        for i, rect in enumerate(self.rectangles):
+            row = i // self.number_of_columns
+            col = i % self.number_of_columns
+            rect.color = (255, 255, 255) if self.game_engine.old_generation_array[row][col] else (0, 0, 0)
             rect.draw()
-        self.create_rectangles()
+        self.window.invalid = True
 
     def create_rectangles(self):
         self.rectangles = []
