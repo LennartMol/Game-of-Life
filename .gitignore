@@ -216,3 +216,5 @@ Scripts/pip3.exe
 Scripts/python.exe
 Scripts/pythonw.exe
 .vscode/launch.json
+Scripts/f2py.exe
+Scripts/numpy-config.exe
