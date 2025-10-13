@@ -12,8 +12,8 @@ game_window = window.Window(game_engine=game_engine,
 
 def game_loop(self):
     game_engine.simulate_single_generation()
-    game_window.draw_window()
+    game_window.create_rectangles()
 
 if __name__ == "__main__":
-    pyglet.clock.schedule_interval(game_loop, 1) # update game loop every second
+    pyglet.clock.schedule_interval(game_loop, 1/10) # update game loop every second
     pyglet.app.run()

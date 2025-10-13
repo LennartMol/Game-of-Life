@@ -22,6 +22,11 @@ class Window():
         self.rectangles = []
         self.create_rectangles()
 
+        self.window.push_handlers(on_draw=self.on_draw)
+
+    def on_draw(self):
+        self.draw_window()
+    
     def draw_window(self):
         self.window.clear()
         for rect in self.rectangles:
