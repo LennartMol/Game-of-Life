@@ -3,6 +3,7 @@ import test_arrays
 import pyglet
 import window
 import time
+import threading
 
 debug_state = True
 
@@ -14,8 +15,10 @@ game_window = window.Window(game_engine=game_engine,
                             window_title='Game of Life',
                             debug=debug_state)
 
-def game_loop(self):
+def game_loop():
     
+    threading.Timer((1/400), game_loop).start()
+
     if(debug_state):
         start = time.time()
 
@@ -25,5 +28,5 @@ def game_loop(self):
         print(f"Generation took {(time.time() - start)*1000:.2f} ms")
 
 if __name__ == "__main__":
-    pyglet.clock.schedule_interval(game_loop, 1/60) # update game loop every second
+    game_loop()
     pyglet.app.run()
