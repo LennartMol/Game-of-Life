@@ -16,16 +16,16 @@ game_window = window.Window(game_engine=game_engine,
                             debug=debug_state)
 
 def game_loop():
-    
-    threading.Timer((1/400), game_loop).start()
 
     if(debug_state):
         start = time.time()
 
+    threading.Timer((1/1), game_loop).start()
+
     game_engine.simulate_single_generation()
     
     if(debug_state):
-        print(f"Generation took {(time.time() - start)*1000:.2f} ms")
+        print(f"Calculating next generation of cells took {(time.time() - start)*1000:.2f} ms")
 
 if __name__ == "__main__":
     game_loop()
