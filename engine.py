@@ -2,7 +2,7 @@ import copy
 
 class Engine():
 
-    def __init__(self, array, debug=True,):
+    def __init__(self, array, debug=False,):
         
         # Array size
         self.number_of_rows = len(array)

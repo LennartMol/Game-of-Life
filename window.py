@@ -1,8 +1,9 @@
 import pyglet
+import time
 
 class Window():
 
-    def __init__(self, game_engine, cell_size=20, window_title='Game of Life'):
+    def __init__(self, game_engine, cell_size=20, window_title='Game of Life', debug=False):
 
         # Game engine
         self.game_engine = game_engine
@@ -12,20 +13,28 @@ class Window():
         self.number_of_columns = self.game_engine.number_of_columns
         self.cell_size = cell_size
 
-
         # window
         self.title = window_title
         self.window_width = self.cell_size * self.number_of_columns
         self.window_height = self.cell_size * self.number_of_rows
         self.window = pyglet.window.Window(self.window_width , self.window_height, self.title)
     
+        self.debug_state = debug
+
+
         self.rectangles = []
         self.create_rectangles()
 
         self.window.push_handlers(on_draw=self.on_draw)
 
     def on_draw(self):
+        if(self.debug_state):
+            start = time.time()
         self.draw_window()
+        
+        if(self.debug_state):
+            print(f"Drawing took {(time.time() - start)*1000:.2f} ms")
+        
     
     def draw_window(self):
         self.window.clear()
