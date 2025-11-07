@@ -64,6 +64,7 @@ class Engine():
 
         elif(GPS <= 180):
             self.__generations_per_second = GPS
+            self.__number_of_generations_per_game_loop = 1
 
         else:
             self.__generations_per_second = 180

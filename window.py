@@ -26,15 +26,15 @@ class Window():
 
         self.window.push_handlers(on_draw=self.on_draw)
  
-        self.decrease_pressed = pyglet.resource.image("button_decrease_pressed.png")
-        self.decrease_pressed.width = 100
-        self.decrease_pressed.height = 100   
-        self.decrease_unpressed = pyglet.resource.image("button_decrease_unpressed.png")
-        self.decrease_unpressed.width = 100 
-        self.decrease_unpressed.height = 100                                                                                                                               
+        self.decrease_pressed = pyglet.resource.image("button_decrease_pressed.png", border=1)
+        self.decrease_pressed.width = 50
+        self.decrease_pressed.height = 50   
+        self.decrease_unpressed = pyglet.resource.image("button_decrease_unpressed.png", border=1)
+        self.decrease_unpressed.width = 50 
+        self.decrease_unpressed.height = 50                                                                                                                               
 
         self.decrease_fps_button = pyglet.gui.PushButton(x=0, 
-                                                         y= self.window_height - 100, 
+                                                         y= self.window_height - 50, 
                                                          pressed=self.decrease_pressed,
                                                          unpressed=self.decrease_unpressed,
                                                          hover=None,
@@ -42,14 +42,14 @@ class Window():
                                                          group=None)
         
         self.increase_pressed = pyglet.resource.image("button_increase_pressed.png")
-        self.increase_pressed.width = 100
-        self.increase_pressed.height = 100   
+        self.increase_pressed.width = 50
+        self.increase_pressed.height = 50   
         self.increase_unpressed = pyglet.resource.image("button_increase_unpressed.png")
-        self.increase_unpressed.width = 100 
-        self.increase_unpressed.height = 100 
+        self.increase_unpressed.width = 50 
+        self.increase_unpressed.height = 50 
 
         self.increase_fps_button = pyglet.gui.PushButton(x=100, 
-                                                         y= self.window_height - 100, 
+                                                         y= self.window_height - 50, 
                                                          pressed=self.increase_pressed,
                                                          unpressed=self.increase_unpressed,
                                                          hover=None,
@@ -60,12 +60,41 @@ class Window():
         self.window.push_handlers(self.increase_fps_button)
         self.decrease_fps_button.set_handler('on_press', self.decrease_fps_button_on_press_handler)
         self.increase_fps_button.set_handler('on_press', self.increase_fps_button_on_press_handler)
+
+        self.FPS_text_input = pyglet.gui.TextEntry(str(game_engine.get_generations_per_second()),
+                                                   x= 55,
+                                                   y= self.window_height - 35,
+                                                   width=40,
+                                                   batch=self.batch)
+        
+        self.window.push_handlers(self.FPS_text_input)
+        self.FPS_text_input.set_handler('on_commit', self.FPS_text_input_on_commit_handler)
+    
+    def FPS_text_input_on_commit_handler(self, widget, input):
+        if (int(input) >= 181):
+            real_value = int(input) - int(input) % 180
+            self.game_engine.update_generations_per_second(real_value)
+            self.FPS_text_input.value = str(real_value)
+        else:
+            self.game_engine.update_generations_per_second(int(input))
     
     def decrease_fps_button_on_press_handler(self, widget):
-            print("Decrease FPS Button Pressed!")
+        if(self.game_engine.get_generations_per_second() == 1 and self.game_engine.get_number_of_generations_per_game_loop() == 0):
+            return
+        elif((self.game_engine.get_generations_per_second() % 180 == 0) and not self.game_engine.get_number_of_generations_per_game_loop() == 1):
+            self.FPS_text_input.value = str(int(self.FPS_text_input.value) - 180)
+        else: 
+            self.FPS_text_input.value = str(int(self.FPS_text_input.value) - 1)
+        self.game_engine.update_generations_per_second(int(self.FPS_text_input.value))
 
     def increase_fps_button_on_press_handler(self, widget):
-            print("Increase FPS Button Pressed!")
+        if(self.game_engine.get_generations_per_second() % 180 == 0):
+            real_value = int(self.FPS_text_input.value) - int(self.FPS_text_input.value) % 180
+            self.FPS_text_input.value = str(real_value + 180)
+
+        else:
+            self.FPS_text_input.value = str(int(self.FPS_text_input.value) + 1)
+        self.game_engine.update_generations_per_second(int(self.FPS_text_input.value))
     
 
     def on_draw(self):
