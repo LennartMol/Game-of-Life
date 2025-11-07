@@ -1,5 +1,6 @@
 import pyglet
 import time
+import numpy as np
 
 class Window():
 
@@ -15,7 +16,8 @@ class Window():
 
         # window
         self.title = window_title
-        self.window_width = self.cell_size * self.number_of_columns + 800
+        self.simulation_window_offset = 800
+        self.window_width = self.cell_size * self.number_of_columns + self.simulation_window_offset
         self.window_height = self.cell_size * self.number_of_rows
         self.window = pyglet.window.Window(self.window_width, self.window_height, self.title)
     
@@ -25,6 +27,7 @@ class Window():
         self.cells = self.create_batch_cells()
 
         self.window.push_handlers(on_draw=self.on_draw)
+        self.window.push_handlers(on_mouse_press=self.on_mouse_press)
  
         self.decrease_pressed = pyglet.resource.image("button_decrease_pressed.png", border=1)
         self.decrease_pressed.width = 50
@@ -96,6 +99,24 @@ class Window():
             self.FPS_text_input.value = str(int(self.FPS_text_input.value) + 1)
         self.game_engine.update_generations_per_second(int(self.FPS_text_input.value))
     
+    def on_mouse_press(self, x, y, button, modifiers):
+        if(button == pyglet.window.mouse.LEFT):
+            if(x <= 800):
+                return
+            
+            col = np.rint((x - x % 20 - self.simulation_window_offset) / 20).astype(int)
+            row = np.rint((y - y % 20) / 20).astype(int)
+
+
+
+            if(self.game_engine.old_generation_array[row][col]):
+                 self.game_engine.old_generation_array[row][col] = 0
+            else:
+                 self.game_engine.old_generation_array[row][col] = 1
+
+
+
+        pass
 
     def on_draw(self):
         if(self.debug_state):
@@ -120,7 +141,7 @@ class Window():
         cells = []
         for row in range(self.number_of_rows):
             for col in range(self.number_of_columns):
-                x = col * self.cell_size + 800
+                x = col * self.cell_size + self.simulation_window_offset
                 y = row * self.cell_size
                 color = (255, 255, 255) if self.game_engine.old_generation_array[row][col] else (0, 0, 0)
                 cell = pyglet.shapes.Rectangle(x, y, self.cell_size, self.cell_size, color=color, batch=self.batch)
