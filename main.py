@@ -30,6 +30,6 @@ def game_loop():
         print(f"Calculating next generation of cells took {(time.time() - start)*1000:.2f} ms")
 
 if __name__ == "__main__":
-    game_engine.update_generations_per_second(1)
+    game_engine.update_generations_per_second(480)
     game_loop()
     pyglet.app.run()

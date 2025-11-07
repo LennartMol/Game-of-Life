@@ -67,7 +67,7 @@ class Engine():
 
         else:
             self.__generations_per_second = 180
-            self.__number_of_generations_per_game_loop = GPS/180
+            self.__number_of_generations_per_game_loop = round(GPS/180)
             
 
     def get_generations_per_second(self):
