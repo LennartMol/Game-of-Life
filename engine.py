@@ -59,7 +59,7 @@ class Engine():
 
     def update_generations_per_second(self, GPS):
         if (GPS < 1):
-            self.__generations_per_second = 1
+            self.__generations_per_second = 60
             self.__number_of_generations_per_game_loop = 0
 
         elif(GPS <= 180):

@@ -16,7 +16,7 @@ class Window():
 
         # window
         self.title = window_title
-        self.simulation_window_offset = 800
+        self.simulation_window_offset = 200
         self.window_width = self.cell_size * self.number_of_columns + self.simulation_window_offset
         self.window_height = self.cell_size * self.number_of_rows
         self.window = pyglet.window.Window(self.window_width, self.window_height, self.title)
@@ -85,7 +85,7 @@ class Window():
             self.game_engine.update_generations_per_second(int(input))
     
     def decrease_fps_button_on_press_handler(self, widget):
-        if(self.game_engine.get_generations_per_second() == 1 and self.game_engine.get_number_of_generations_per_game_loop() == 0):
+        if(self.game_engine.get_generations_per_second() == 60 and self.game_engine.get_number_of_generations_per_game_loop() == 0):
             return
         elif((self.game_engine.get_generations_per_second() % 180 == 0) and not self.game_engine.get_number_of_generations_per_game_loop() == 1):
             self.FPS_text_input.value = str(int(self.FPS_text_input.value) - 180)
@@ -106,11 +106,11 @@ class Window():
     
     def on_mouse_press(self, x, y, button, modifiers):
         if(button == pyglet.window.mouse.LEFT):
-            if(x <= 800):
+            if(x <= self.simulation_window_offset):
                 return
             
-            col = np.rint((x - x % 20 - self.simulation_window_offset) / 20).astype(int)
-            row = np.rint((y - y % 20) / 20).astype(int)
+            col = np.rint((x - x % self.cell_size - self.simulation_window_offset) / self.cell_size).astype(int)
+            row = np.rint((y - y % self.cell_size) / self.cell_size).astype(int)
 
 
 
