@@ -56,34 +56,6 @@ class Engine():
 
         if(self.debug == True):
             self.print_array(self.old_generation_array)
-    
-    def simulate(self):
-        # if(self.__generations_per_second == 0):
-        #     return
-
-        # if(self.skip_most_frames):
-        #     if(self.debug == "Frames"):
-        #         print(f"Skip_most_frames: {self.skip_most_frames}")
-        #         print(f"Frame_count: {self.frame_counter}")
-            
-        #     # checks if frame does not have to be skipped, otherwise skips frame
-        #     if( not (self.divider / self.frame_counter % 1) == 0):
-        #         self.simulate_single_generation()
-        #         if(self.debug == "Frames"):
-        #             print(f"Frame not skipped")
-            
-        # else:
-        #     if( not (self.divider / self.frame_counter % 1) == 0):
-        #         self.simulate_single_generation()
-        
-
-
-        # if(self.frame_counter >= 60):
-        #     self.frame_counter = 1
-        #     return
-        
-        # self.frame_counter = self.frame_counter + 1
-        self.simulate_single_generation()
 
     def update_generations_per_second(self, GPS):
         if (GPS < 1):

@@ -24,7 +24,7 @@ def game_loop():
     threading.Timer((1/game_engine.get_generations_per_second()), game_loop).start()
 
     for simulations in range(game_engine.get_number_of_generations_per_game_loop()):
-        game_engine.simulate()
+        game_engine.simulate_single_generation()
 
     if(debug_state):
         print(f"Calculating next generation of cells took {(time.time() - start)*1000:.2f} ms")
