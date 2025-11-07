@@ -74,7 +74,10 @@ class Window():
         self.FPS_text_input.set_handler('on_commit', self.FPS_text_input_on_commit_handler)
     
     def FPS_text_input_on_commit_handler(self, widget, input):
-        if (int(input) >= 181):
+        if(int(input) > 1260 ):
+            self.game_engine.update_generations_per_second(1260)
+            self.FPS_text_input.value = str(1260)
+        elif (int(input) >= 181):
             real_value = int(input) - int(input) % 180
             self.game_engine.update_generations_per_second(real_value)
             self.FPS_text_input.value = str(real_value)
@@ -91,7 +94,9 @@ class Window():
         self.game_engine.update_generations_per_second(int(self.FPS_text_input.value))
 
     def increase_fps_button_on_press_handler(self, widget):
-        if(self.game_engine.get_generations_per_second() % 180 == 0):
+        if (int(self.FPS_text_input.value) == 1260):
+           return
+        elif(self.game_engine.get_generations_per_second() % 180 == 0):
             real_value = int(self.FPS_text_input.value) - int(self.FPS_text_input.value) % 180
             self.FPS_text_input.value = str(real_value + 180)
 
