@@ -13,7 +13,10 @@ class Engine():
         self.old_generation_array = np.array(array, dtype=np.uint8)
 
         # simulation speed
-        self.generations_per_second = 0
+        self.__generations_per_second = 0
+        self.frame_counter = 1
+        self.skip_most_frames = None
+        self.divider = None
 
         # Debug flag
         self.debug = debug
@@ -50,5 +53,46 @@ class Engine():
 
         self.old_generation_array = new_arr.astype(np.uint8)
 
-        if (self.debug):
+        if(self.debug == True):
             self.print_array(self.old_generation_array)
+    
+    def simulate(self):
+        if(self.__generations_per_second == 0):
+            return
+
+        if(self.skip_most_frames):
+            if(self.debug == "Frames"):
+                print(f"Skip_most_frames: {self.skip_most_frames}")
+                print(f"Frame_count: {self.frame_counter}")
+            
+            # checks if frame does not have to be skipped, otherwise skips frame
+            if( not (self.divider / self.frame_counter % 1) == 0):
+                self.simulate_single_generation()
+                if(self.debug == "Frames"):
+                    print(f"Frame not skipped")
+            
+        else:
+            if( not (self.divider / self.frame_counter % 1) == 0):
+                self.simulate_single_generation()
+        
+
+
+        if(self.frame_counter >= 60):
+            self.frame_counter = 1
+            return
+        
+        self.frame_counter = self.frame_counter + 1
+
+    def update_generations_per_second(self, GPS):
+        if(GPS <= 60):
+            
+            self.divider = GPS / 60
+            
+            # if lower than 0.5 -> less than 50% of frames simulate a new generation
+            if (self.divider <= 0.5):
+                self.skip_most_frames = True
+            # opposite is true, most frames do simulate new generation
+            else:
+                self.skip_most_frames = False
+            
+            self.__generations_per_second = GPS

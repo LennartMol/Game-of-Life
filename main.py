@@ -5,10 +5,10 @@ import window
 import time
 import threading
 
-debug_state = True
+debug_state = False
 
 game_engine = engine.Engine(array=test_arrays.glider_gun_array,
-                            debug=False)
+                            debug="Frames")
 
 game_window = window.Window(game_engine=game_engine,
                             cell_size=20,
@@ -20,13 +20,14 @@ def game_loop():
     if(debug_state):
         start = time.time()
 
-    threading.Timer((1/1), game_loop).start()
+    threading.Timer((1/60), game_loop).start()
 
-    game_engine.simulate_single_generation()
+    game_engine.simulate()
     
     if(debug_state):
         print(f"Calculating next generation of cells took {(time.time() - start)*1000:.2f} ms")
 
 if __name__ == "__main__":
+    game_engine.update_generations_per_second(1)
     game_loop()
     pyglet.app.run()
