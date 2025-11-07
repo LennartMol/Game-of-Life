@@ -33,23 +33,39 @@ class Window():
         self.decrease_unpressed.width = 100 
         self.decrease_unpressed.height = 100                                                                                                                               
 
-        self.decrease_fps_button = pyglet.gui.PushButton(x=15, 
-                                                         y=15, 
+        self.decrease_fps_button = pyglet.gui.PushButton(x=0, 
+                                                         y= self.window_height - 100, 
                                                          pressed=self.decrease_pressed,
                                                          unpressed=self.decrease_unpressed,
                                                          hover=None,
                                                          batch=self.batch,
                                                          group=None)
         
-        self.window.push_handlers(self.decrease_fps_button)
-        
-        
-        
-        self.decrease_fps_button.set_handler('on_press', self.decrease_fps_button_on_press_handler)
+        self.increase_pressed = pyglet.resource.image("button_increase_pressed.png")
+        self.increase_pressed.width = 100
+        self.increase_pressed.height = 100   
+        self.increase_unpressed = pyglet.resource.image("button_increase_unpressed.png")
+        self.increase_unpressed.width = 100 
+        self.increase_unpressed.height = 100 
 
+        self.increase_fps_button = pyglet.gui.PushButton(x=100, 
+                                                         y= self.window_height - 100, 
+                                                         pressed=self.increase_pressed,
+                                                         unpressed=self.increase_unpressed,
+                                                         hover=None,
+                                                         batch=self.batch,
+                                                         group=None)
+        
+        self.window.push_handlers(self.decrease_fps_button)
+        self.window.push_handlers(self.increase_fps_button)
+        self.decrease_fps_button.set_handler('on_press', self.decrease_fps_button_on_press_handler)
+        self.increase_fps_button.set_handler('on_press', self.increase_fps_button_on_press_handler)
     
     def decrease_fps_button_on_press_handler(self, widget):
-            print("Button Pressed!")
+            print("Decrease FPS Button Pressed!")
+
+    def increase_fps_button_on_press_handler(self, widget):
+            print("Increase FPS Button Pressed!")
     
 
     def on_draw(self):
