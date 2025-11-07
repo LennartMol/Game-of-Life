@@ -14,6 +14,7 @@ class Engine():
 
         # simulation speed
         self.__generations_per_second = 0
+        self.__number_of_generations_per_game_loop = 1
         self.frame_counter = 1
         self.skip_most_frames = None
         self.divider = None
@@ -57,42 +58,48 @@ class Engine():
             self.print_array(self.old_generation_array)
     
     def simulate(self):
-        if(self.__generations_per_second == 0):
-            return
+        # if(self.__generations_per_second == 0):
+        #     return
 
-        if(self.skip_most_frames):
-            if(self.debug == "Frames"):
-                print(f"Skip_most_frames: {self.skip_most_frames}")
-                print(f"Frame_count: {self.frame_counter}")
+        # if(self.skip_most_frames):
+        #     if(self.debug == "Frames"):
+        #         print(f"Skip_most_frames: {self.skip_most_frames}")
+        #         print(f"Frame_count: {self.frame_counter}")
             
-            # checks if frame does not have to be skipped, otherwise skips frame
-            if( not (self.divider / self.frame_counter % 1) == 0):
-                self.simulate_single_generation()
-                if(self.debug == "Frames"):
-                    print(f"Frame not skipped")
+        #     # checks if frame does not have to be skipped, otherwise skips frame
+        #     if( not (self.divider / self.frame_counter % 1) == 0):
+        #         self.simulate_single_generation()
+        #         if(self.debug == "Frames"):
+        #             print(f"Frame not skipped")
             
-        else:
-            if( not (self.divider / self.frame_counter % 1) == 0):
-                self.simulate_single_generation()
+        # else:
+        #     if( not (self.divider / self.frame_counter % 1) == 0):
+        #         self.simulate_single_generation()
         
 
 
-        if(self.frame_counter >= 60):
-            self.frame_counter = 1
-            return
+        # if(self.frame_counter >= 60):
+        #     self.frame_counter = 1
+        #     return
         
-        self.frame_counter = self.frame_counter + 1
+        # self.frame_counter = self.frame_counter + 1
+        self.simulate_single_generation()
 
     def update_generations_per_second(self, GPS):
-        if(GPS <= 60):
-            
-            self.divider = GPS / 60
-            
-            # if lower than 0.5 -> less than 50% of frames simulate a new generation
-            if (self.divider <= 0.5):
-                self.skip_most_frames = True
-            # opposite is true, most frames do simulate new generation
-            else:
-                self.skip_most_frames = False
-            
+        if (GPS < 1):
+            self.__generations_per_second = 1
+            self.__number_of_generations_per_game_loop = 0
+
+        elif(GPS <= 180):
             self.__generations_per_second = GPS
+
+        else:
+            self.__generations_per_second = 180
+            self.__number_of_generations_per_game_loop = GPS/180
+            
+
+    def get_generations_per_second(self):
+        return self.__generations_per_second
+
+    def get_number_of_generations_per_game_loop(self):
+        return self.__number_of_generations_per_game_loop
