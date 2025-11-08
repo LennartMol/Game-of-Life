@@ -1,6 +1,7 @@
 import pyglet
 import time
 import numpy as np
+from pyglet.gl import gl
 
 class Window():
 
@@ -20,11 +21,14 @@ class Window():
         self.window_width = self.cell_size * self.number_of_columns + self.simulation_window_offset
         self.window_height = self.cell_size * self.number_of_rows
         self.window = pyglet.window.Window(self.window_width, self.window_height, self.title)
+
+        # Draw texture
+        self.texture = None
     
         self.debug_state = debug
 
         self.batch = pyglet.graphics.Batch()
-        self.cells = self.create_batch_cells()
+        # self.cells = self.create_batch_cells()
 
         self.window.push_handlers(on_draw=self.on_draw)
         self.window.push_handlers(on_mouse_press=self.on_mouse_press)
@@ -112,14 +116,10 @@ class Window():
             col = np.rint((x - x % self.cell_size - self.simulation_window_offset) / self.cell_size).astype(int)
             row = np.rint((y - y % self.cell_size) / self.cell_size).astype(int)
 
-
-
             if(self.game_engine.old_generation_array[row][col]):
                  self.game_engine.old_generation_array[row][col] = 0
             else:
                  self.game_engine.old_generation_array[row][col] = 1
-
-
 
         pass
 
@@ -129,27 +129,45 @@ class Window():
 
         self.window.clear()
 
-        self.update_cell_positions()
+        self.draw_texture()
+
         self.batch.draw()
         
         if(self.debug_state):
             print(f"Drawing took {(time.time() - start)*1000:.2f} ms")
-        
-    
-    def update_cell_positions(self):
-        for i, cell in enumerate(self.cells):
-            row = i // self.number_of_columns
-            col = i % self.number_of_columns
-            cell.color = (255, 255, 255) if self.game_engine.old_generation_array[row][col] else (0, 0, 0)
 
-    def create_batch_cells(self):
-        cells = []
-        for row in range(self.number_of_rows):
-            for col in range(self.number_of_columns):
-                x = col * self.cell_size + self.simulation_window_offset
-                y = row * self.cell_size
-                color = (255, 255, 255) if self.game_engine.old_generation_array[row][col] else (0, 0, 0)
-                cell = pyglet.shapes.Rectangle(x, y, self.cell_size, self.cell_size, color=color, batch=self.batch)
-                cells.append(cell)
+    def draw_texture(self):
+        arr = np.array(self.game_engine.old_generation_array, dtype=np.uint8)
+        img_data = np.zeros((self.number_of_rows, self.number_of_columns, 3), dtype=np.uint8)
+        img_data[arr == 1] = (255, 255, 255)  # white for alive, black by default
+
+        raw_bytes = img_data[::].tobytes()
+
+        if self.texture is None:
+            image_data = pyglet.image.ImageData(
+                self.number_of_columns, self.number_of_rows, 'RGB', raw_bytes
+            )
+            tex = image_data.get_texture()
+            gl.glBindTexture(gl.GL_TEXTURE_2D, tex.id)
+            gl.glPixelStorei(gl.GL_UNPACK_ALIGNMENT, 1)
+            gl.glTexParameteri(gl.GL_TEXTURE_2D, gl.GL_TEXTURE_MAG_FILTER, gl.GL_NEAREST)
+            gl.glTexParameteri(gl.GL_TEXTURE_2D, gl.GL_TEXTURE_MIN_FILTER, gl.GL_NEAREST)
+            self.texture = tex
+            
+        else:
+            gl.glBindTexture(gl.GL_TEXTURE_2D, self.texture.id)
+            gl.glPixelStorei(gl.GL_UNPACK_ALIGNMENT, 1)
+            gl.glTexSubImage2D(
+                gl.GL_TEXTURE_2D, 0, 0, 0,
+                self.number_of_columns, self.number_of_rows,
+                gl.GL_RGB, gl.GL_UNSIGNED_BYTE, raw_bytes
+            )
+
         
-        return cells
+        sim_width  = self.window_width  - self.simulation_window_offset
+        sim_height = self.window_height
+        self.texture.blit(
+            self.simulation_window_offset, 0,
+            width=sim_width,
+            height=sim_height
+        )
