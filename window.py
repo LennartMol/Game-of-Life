@@ -29,10 +29,10 @@ class Window():
         self.window.push_handlers(on_draw=self.on_draw)
         self.window.push_handlers(on_mouse_press=self.on_mouse_press)
  
-        self.decrease_pressed = pyglet.resource.image("button_decrease_pressed.png", border=1)
+        self.decrease_pressed = pyglet.resource.image("Images/button_decrease_pressed.png", border=1)
         self.decrease_pressed.width = 50
         self.decrease_pressed.height = 50   
-        self.decrease_unpressed = pyglet.resource.image("button_decrease_unpressed.png", border=1)
+        self.decrease_unpressed = pyglet.resource.image("Images/button_decrease_unpressed.png", border=1)
         self.decrease_unpressed.width = 50 
         self.decrease_unpressed.height = 50                                                                                                                               
 
@@ -44,10 +44,10 @@ class Window():
                                                          batch=self.batch,
                                                          group=None)
         
-        self.increase_pressed = pyglet.resource.image("button_increase_pressed.png")
+        self.increase_pressed = pyglet.resource.image("Images/button_increase_pressed.png")
         self.increase_pressed.width = 50
         self.increase_pressed.height = 50   
-        self.increase_unpressed = pyglet.resource.image("button_increase_unpressed.png")
+        self.increase_unpressed = pyglet.resource.image("Images/button_increase_unpressed.png")
         self.increase_unpressed.width = 50 
         self.increase_unpressed.height = 50 
 
