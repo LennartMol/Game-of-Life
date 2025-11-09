@@ -13,14 +13,18 @@ class Window():
         # Grid variables
         self.number_of_rows = self.game_engine.number_of_rows
         self.number_of_columns = self.game_engine.number_of_columns
-        self.cell_size = cell_size
-
+        
         # Window settings
         self.title = window_title
         self.simulation_window_offset = 200
-        self.window_width = self.cell_size * self.number_of_columns + self.simulation_window_offset
-        self.window_height = self.cell_size * self.number_of_rows
+        self.window_width = self.number_of_rows + self.simulation_window_offset
+        self.window_height = self.number_of_columns
         self.window = pyglet.window.Window(self.window_width, self.window_height, self.title)
+
+        # Viewed simulation window
+        # 1024x1024 -> Size 1 (1024), size 2 (512), size 4 (256), size 8 (128), 16 (64), 32 (32)
+        self.view_center = [self.number_of_rows//2, self.number_of_columns//2]
+        self.cell_size = cell_size
 
         # Textures & batch
         self.texture = None
@@ -143,15 +147,26 @@ class Window():
             print(f"Drawing took {(time.time() - start)*1000:.2f} ms")
 
     def draw_texture(self):
+
         arr = np.array(self.game_engine.old_generation_array, dtype=np.uint8)
-        img_data = np.zeros((self.number_of_rows, self.number_of_columns, 3), dtype=np.uint8)
-        img_data[arr == 1] = (255, 255, 255)  # white for alive, black by default
+
+        view_size = 1024//self.cell_size # screen size to be viewed
+
+        r0 = self.view_center[0] - view_size//2
+        r1 = self.view_center[0] + view_size//2
+        c0 = self.view_center[1] - view_size//2
+        c1 = self.view_center[1] + view_size//2
+
+        arr_center = arr[r0:r1, c0:c1]
+        
+        img_data = np.zeros((view_size, view_size, 3), dtype=np.uint8)
+        img_data[arr_center == 1] = (255, 255, 255)  # white for alive, black by default
 
         raw_bytes = img_data[::].tobytes()
 
         if self.texture is None:
             image_data = pyglet.image.ImageData(
-                self.number_of_columns, self.number_of_rows, 'RGB', raw_bytes
+                view_size, view_size, 'RGB', raw_bytes
             )
             tex = image_data.get_texture()
             gl.glBindTexture(gl.GL_TEXTURE_2D, tex.id)
@@ -165,7 +180,7 @@ class Window():
             gl.glPixelStorei(gl.GL_UNPACK_ALIGNMENT, 1)
             gl.glTexSubImage2D(
                 gl.GL_TEXTURE_2D, 0, 0, 0,
-                self.number_of_columns, self.number_of_rows,
+                view_size, view_size,
                 gl.GL_RGB, gl.GL_UNSIGNED_BYTE, raw_bytes
             )
 
