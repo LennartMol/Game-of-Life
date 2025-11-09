@@ -70,7 +70,7 @@ pulsar = [
 ]
 
 
-glider_gun_array = [[0 for i in range(150)] for j in range(150)]
+glider_gun_array = [[0 for i in range(100)] for j in range(100)]
 
 coords = [
     (5, 1), (5, 2), (6, 1), (6, 2),                       # Small square on the left

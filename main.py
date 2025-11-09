@@ -5,9 +5,10 @@ import window
 import time
 import threading
 
-debug_state = False
+debug_state = True
 
 game_engine = engine.Engine(array=test_arrays.glider_gun_array,
+                            cells_loop_border=True,
                             debug="Frames")
 
 game_window = window.Window(game_engine=game_engine,

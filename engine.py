@@ -4,7 +4,7 @@ import numpy as np
 
 class Engine():
 
-    def __init__(self, array, debug=False,):
+    def __init__(self, array, cells_loop_border=False, caching=True, debug=False):
         
         # Array size
         self.number_of_rows = len(array)
@@ -20,9 +20,20 @@ class Engine():
         self.skip_most_frames = None
         self.divider = None
 
+        # Performance settings
+        self.cells_loop_border = cells_loop_border
+        self.caching = caching
+
+        # Compiled functions to simulate a next generation
+        self.simulate_function = njit(parallel=True, fastmath=True, cache=caching)(simulate_numba_generation)
+        self.simulate_function_loop = njit(parallel=True, fastmath=True, cache=caching)(simulate_numba_generation_loop)
+
         # Debug flag
         self.debug = debug
-        
+    
+    def pre_compile_numba_code():
+        pass
+
     
     def print_array(self, array, selected_cell = False):
         
@@ -37,32 +48,10 @@ class Engine():
             print(row)
 
     def simulate_single_generation(self):
-        if self.old_generation_array.size < 250000:
-            self.simulate_numpy_generation()
-        else:
-            self.old_generation_array = simulate_numba_generation(self.old_generation_array)
-
-    def simulate_numpy_generation(self):
-        arr = self.old_generation_array
-
-        # Count neighbours using fast array shifting
-        neighbours = (
-            np.roll(arr,  1, axis=0) + np.roll(arr, -1, axis=0) +  # up/down
-            np.roll(arr,  1, axis=1) + np.roll(arr, -1, axis=1) +  # left/right
-            np.roll(np.roll(arr, 1, axis=0),  1, axis=1) +          # top-left
-            np.roll(np.roll(arr, 1, axis=0), -1, axis=1) +          # top-right
-            np.roll(np.roll(arr, -1, axis=0), 1, axis=1) +          # bottom-left
-            np.roll(np.roll(arr, -1, axis=0), -1, axis=1)           # bottom-right
-        )
-
-        # Apply Game of Life rules (vectorized)
-        new_arr = ((arr == 1) & ((neighbours == 2) | (neighbours == 3))) | \
-                    ((arr == 0) & (neighbours == 3))
-
-        self.old_generation_array = new_arr.astype(np.uint8)
-
-        if(self.debug == True):
-            self.print_array(self.old_generation_array)
+        if self.cells_loop_border:
+            self.old_generation_array = self.simulate_function_loop(self.old_generation_array)
+        else: 
+            self.old_generation_array = self.simulate_function(self.old_generation_array)
 
 
     def update_generations_per_second(self, GPS):
@@ -85,18 +74,52 @@ class Engine():
     def get_number_of_generations_per_game_loop(self):
         return self.__number_of_generations_per_game_loop
 
-@njit(parallel=True, fastmath=True)
 def simulate_numba_generation(arr):
     rows, cols = arr.shape
     new_arr = np.zeros_like(arr, dtype=np.uint8)
 
-    # skip borders for simplicity (keeps edges dead)
     for r in prange(1, rows - 1):
         for c in range(1, cols - 1):
             n = (
                 arr[r-1, c-1] + arr[r-1, c] + arr[r-1, c+1] +
                 arr[r, c-1]               + arr[r, c+1] +
                 arr[r+1, c-1] + arr[r+1, c] + arr[r+1, c+1]
+            )
+
+            if arr[r, c] == 1:
+                new_arr[r, c] = 1 if n == 2 or n == 3 else 0
+            else:
+                new_arr[r, c] = 1 if n == 3 else 0
+
+    return new_arr
+
+def simulate_numba_generation_loop(arr):
+    rows, cols = arr.shape
+    new_arr = np.zeros_like(arr, dtype=np.uint8)
+
+    row_above = np.empty(rows, np.int64)
+    row_below = np.empty(rows, np.int64)
+    col_left  = np.empty(cols, np.int64)
+    col_right = np.empty(cols, np.int64)
+
+    for r in range(rows):
+        row_above[r] = (r - 1 + rows) % rows
+        row_below[r] = (r + 1) % rows
+    for c in range(cols):
+        col_left[c]  = (c - 1 + cols) % cols
+        col_right[c] = (c + 1) % cols
+
+    for r in prange(rows):
+        ra = row_above[r]
+        rb = row_below[r]
+        for c in range(cols):
+            cl = col_left[c]
+            cr = col_right[c]
+
+            n = (
+                arr[ra, cl] + arr[ra, c] + arr[ra, cr] +
+                arr[r,  cl]               + arr[r,  cr] +
+                arr[rb, cl] + arr[rb, c] + arr[rb, cr]
             )
 
             if arr[r, c] == 1:
