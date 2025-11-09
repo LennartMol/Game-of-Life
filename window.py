@@ -7,32 +7,44 @@ class Window():
 
     def __init__(self, game_engine, cell_size=20, window_title='Game of Life', debug=False):
 
-        # Game engine
+        # Game engine instance
         self.game_engine = game_engine
 
-        # Grid
+        # Grid variables
         self.number_of_rows = self.game_engine.number_of_rows
         self.number_of_columns = self.game_engine.number_of_columns
         self.cell_size = cell_size
 
-        # window
+        # Window settings
         self.title = window_title
         self.simulation_window_offset = 200
         self.window_width = self.cell_size * self.number_of_columns + self.simulation_window_offset
         self.window_height = self.cell_size * self.number_of_rows
         self.window = pyglet.window.Window(self.window_width, self.window_height, self.title)
 
-        # Draw texture
+        # Textures & batch
         self.texture = None
-    
-        self.debug_state = debug
-
         self.batch = pyglet.graphics.Batch()
-        # self.cells = self.create_batch_cells()
 
+                                                                                                                                 
+        # Create UI elements
+        self.decrease_fps_button = self.create_decrease_fps_button()
+        self.increase_fps_button = self.create_increase_fps_button()
+        self.FPS_text_input = self.create_FPS_text_input_field()
+        
+        # Push and setcustom handlers
         self.window.push_handlers(on_draw=self.on_draw)
-        self.window.push_handlers(on_mouse_press=self.on_mouse_press)
- 
+        self.window.push_handlers(on_mouse_press=self.on_mouse_press)  
+        self.window.push_handlers(self.decrease_fps_button)
+        self.window.push_handlers(self.increase_fps_button)
+        self.window.push_handlers(self.FPS_text_input)
+        self.FPS_text_input.set_handler('on_commit', self.FPS_text_input_on_commit_handler)
+        self.decrease_fps_button.set_handler('on_press', self.decrease_fps_button_on_press_handler)
+        self.increase_fps_button.set_handler('on_press', self.increase_fps_button_on_press_handler)
+
+        self.debug_state = debug
+    
+    def create_decrease_fps_button(self):
         self.decrease_pressed = pyglet.resource.image("Images/button_decrease_pressed.png", border=1)
         self.decrease_pressed.width = 50
         self.decrease_pressed.height = 50   
@@ -40,14 +52,15 @@ class Window():
         self.decrease_unpressed.width = 50 
         self.decrease_unpressed.height = 50                                                                                                                               
 
-        self.decrease_fps_button = pyglet.gui.PushButton(x=0, 
-                                                         y= self.window_height - 50, 
-                                                         pressed=self.decrease_pressed,
-                                                         unpressed=self.decrease_unpressed,
-                                                         hover=None,
-                                                         batch=self.batch,
-                                                         group=None)
+        return pyglet.gui.PushButton(x=0, 
+                                     y= self.window_height - 50, 
+                                     pressed=self.decrease_pressed,
+                                     unpressed=self.decrease_unpressed,
+                                     hover=None,
+                                     batch=self.batch,
+                                     group=None)
         
+    def create_increase_fps_button(self):
         self.increase_pressed = pyglet.resource.image("Images/button_increase_pressed.png")
         self.increase_pressed.width = 50
         self.increase_pressed.height = 50   
@@ -55,28 +68,21 @@ class Window():
         self.increase_unpressed.width = 50 
         self.increase_unpressed.height = 50 
 
-        self.increase_fps_button = pyglet.gui.PushButton(x=100, 
-                                                         y= self.window_height - 50, 
-                                                         pressed=self.increase_pressed,
-                                                         unpressed=self.increase_unpressed,
-                                                         hover=None,
-                                                         batch=self.batch,
-                                                         group=None)
-        
-        self.window.push_handlers(self.decrease_fps_button)
-        self.window.push_handlers(self.increase_fps_button)
-        self.decrease_fps_button.set_handler('on_press', self.decrease_fps_button_on_press_handler)
-        self.increase_fps_button.set_handler('on_press', self.increase_fps_button_on_press_handler)
+        return pyglet.gui.PushButton(x=100, 
+                                     y= self.window_height - 50, 
+                                     pressed=self.increase_pressed,
+                                     unpressed=self.increase_unpressed,
+                                     hover=None,
+                                     batch=self.batch,
+                                     group=None)
 
-        self.FPS_text_input = pyglet.gui.TextEntry(str(game_engine.get_generations_per_second()),
-                                                   x= 55,
-                                                   y= self.window_height - 35,
-                                                   width=40,
-                                                   batch=self.batch)
-        
-        self.window.push_handlers(self.FPS_text_input)
-        self.FPS_text_input.set_handler('on_commit', self.FPS_text_input_on_commit_handler)
-    
+    def create_FPS_text_input_field(self):
+        return pyglet.gui.TextEntry(str(self.game_engine.get_generations_per_second()),
+                                    x= 55,
+                                    y= self.window_height - 35,
+                                    width=40,
+                                    batch=self.batch)
+
     def FPS_text_input_on_commit_handler(self, widget, input):
         if(int(input) > 1260 ):
             self.game_engine.update_generations_per_second(1260)
