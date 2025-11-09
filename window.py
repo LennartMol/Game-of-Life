@@ -39,7 +39,8 @@ class Window():
         
         # Push and setcustom handlers
         self.window.push_handlers(on_draw=self.on_draw)
-        self.window.push_handlers(on_mouse_press=self.on_mouse_press)  
+        self.window.push_handlers(on_mouse_press=self.on_mouse_press)
+        self.window.push_handlers(on_mouse_scroll=self.on_mouse_scroll)  
         self.window.push_handlers(self.decrease_fps_button)
         self.window.push_handlers(self.increase_fps_button)
         self.window.push_handlers(self.FPS_text_input)
@@ -134,6 +135,20 @@ class Window():
 
         pass
 
+    def on_mouse_scroll(self, x, y, scroll_x, scroll_y):
+        if scroll_y > 0:
+            if self.cell_size == 32:
+                pass
+            else:
+                self.cell_size = self.cell_size * 2
+                self.texture = None
+        else:
+            if self.cell_size == 1:
+                pass
+            else: 
+                self.cell_size = self.cell_size / 2 
+                self.texture = None
+
     def on_draw(self):
         if(self.debug_state):
             start = time.time()
@@ -150,6 +165,8 @@ class Window():
     def draw_texture(self):
 
         arr = np.array(self.game_engine.old_generation_array, dtype=np.uint8)
+
+        self.view_size = np.rint(1024//self.cell_size).astype(int)
 
         r0 = self.view_center[0] - self.view_size//2
         r1 = self.view_center[0] + self.view_size//2
