@@ -4,7 +4,7 @@ import numpy as np
 
 class Engine():
 
-    def __init__(self, array, cells_loop_border=False, caching=True, debug=False):
+    def __init__(self, array, cells_loop_border=False, caching=True, precompiler=True, debug=False):
         
         # Array size
         self.number_of_rows = len(array)
@@ -23,16 +23,22 @@ class Engine():
         # Performance settings
         self.cells_loop_border = cells_loop_border
         self.caching = caching
+        self.precompiler = precompiler
 
         # Compiled functions to simulate a next generation
         self.simulate_function = njit(parallel=True, fastmath=True, cache=caching)(simulate_numba_generation)
         self.simulate_function_loop = njit(parallel=True, fastmath=True, cache=caching)(simulate_numba_generation_loop)
 
+        if self.precompiler: self.precompile_numba_code()
+
         # Debug flag
         self.debug = debug
     
-    def pre_compile_numba_code():
-        pass
+    def precompile_numba_code(self):
+        if self.cells_loop_border:
+            self.simulate_function_loop(np.zeros((5,5), dtype=np.uint8))
+        else: 
+            self.simulate_function(np.zeros((5,5), dtype=np.uint8))
 
     
     def print_array(self, array, selected_cell = False):
