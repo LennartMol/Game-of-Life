@@ -25,8 +25,7 @@ class Window():
         # Textures & batch
         self.texture = None
         self.batch = pyglet.graphics.Batch()
-
-                                                                                                                                 
+                                                                                                                        
         # Create UI elements
         self.decrease_fps_button = self.create_decrease_fps_button()
         self.increase_fps_button = self.create_increase_fps_button()
@@ -42,6 +41,7 @@ class Window():
         self.decrease_fps_button.set_handler('on_press', self.decrease_fps_button_on_press_handler)
         self.increase_fps_button.set_handler('on_press', self.increase_fps_button_on_press_handler)
 
+        # Debug flag
         self.debug_state = debug
     
     def create_decrease_fps_button(self):
