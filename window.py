@@ -23,8 +23,10 @@ class Window():
 
         # Viewed simulation window
         # 1024x1024 -> Size 1 (1024), size 2 (512), size 4 (256), size 8 (128), 16 (64), 32 (32)
-        self.view_center = [self.number_of_rows//2, self.number_of_columns//2]
         self.cell_size = cell_size
+        self.view_center = [self.number_of_rows//2, self.number_of_columns//2]
+        self.view_size = 1024//self.cell_size
+        
 
         # Textures & batch
         self.texture = None
@@ -122,9 +124,8 @@ class Window():
         if(button == pyglet.window.mouse.LEFT):
             if(x <= self.simulation_window_offset):
                 return
-            
-            col = np.rint((x - x % self.cell_size - self.simulation_window_offset) / self.cell_size).astype(int)
-            row = np.rint((y - y % self.cell_size) / self.cell_size).astype(int)
+            col = np.rint((((x-self.simulation_window_offset) // self.cell_size) + (self.number_of_columns - self.view_size)//2) - ((x-self.simulation_window_offset) % self.cell_size // self.view_size)).astype(int)
+            row = np.rint(((y // self.cell_size) + (self.number_of_rows - self.view_size)//2) - (y % self.cell_size // self.view_size)).astype(int)
 
             if(self.game_engine.old_generation_array[row][col]):
                  self.game_engine.old_generation_array[row][col] = 0
@@ -150,23 +151,21 @@ class Window():
 
         arr = np.array(self.game_engine.old_generation_array, dtype=np.uint8)
 
-        view_size = 1024//self.cell_size # screen size to be viewed
-
-        r0 = self.view_center[0] - view_size//2
-        r1 = self.view_center[0] + view_size//2
-        c0 = self.view_center[1] - view_size//2
-        c1 = self.view_center[1] + view_size//2
+        r0 = self.view_center[0] - self.view_size//2
+        r1 = self.view_center[0] + self.view_size//2
+        c0 = self.view_center[1] - self.view_size//2
+        c1 = self.view_center[1] + self.view_size//2
 
         arr_center = arr[r0:r1, c0:c1]
         
-        img_data = np.zeros((view_size, view_size, 3), dtype=np.uint8)
+        img_data = np.zeros((self.view_size, self.view_size, 3), dtype=np.uint8)
         img_data[arr_center == 1] = (255, 255, 255)  # white for alive, black by default
 
         raw_bytes = img_data[::].tobytes()
 
         if self.texture is None:
             image_data = pyglet.image.ImageData(
-                view_size, view_size, 'RGB', raw_bytes
+                self.view_size, self.view_size, 'RGB', raw_bytes
             )
             tex = image_data.get_texture()
             gl.glBindTexture(gl.GL_TEXTURE_2D, tex.id)
@@ -180,7 +179,7 @@ class Window():
             gl.glPixelStorei(gl.GL_UNPACK_ALIGNMENT, 1)
             gl.glTexSubImage2D(
                 gl.GL_TEXTURE_2D, 0, 0, 0,
-                view_size, view_size,
+                self.view_size, self.view_size,
                 gl.GL_RGB, gl.GL_UNSIGNED_BYTE, raw_bytes
             )
 
