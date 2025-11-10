@@ -127,7 +127,10 @@ class Window():
     
     def on_mouse_press(self, x, y, button, modifiers):
         if(button == pyglet.window.mouse.LEFT):
-            self.toggle_cell_based_on_position(x, y)
+            self.toggle_cell_based_on_position(x, y, turn_on=True)
+
+        if(button == pyglet.window.mouse.RIGHT):
+            self.toggle_cell_based_on_position(x, y, turn_on=False)
 
     def on_mouse_drag(self, x, y, dx, dy, buttons, modifiers):
         
@@ -136,26 +139,50 @@ class Window():
                 self.distance_moved_x_select = self.distance_moved_x_select + dx
                 if self.distance_moved_x_select > self.cell_size :
                     distance_to_move = np.rint(self.distance_moved_x_select / self.cell_size).astype(int)
-                    self.toggle_cell_based_on_position(x, y)
+                    self.toggle_cell_based_on_position(x, y, turn_on=True)
                     self.distance_moved_x_select = self.distance_moved_x_select - distance_to_move * self.cell_size
             
                 elif self.distance_moved_x_select < (self.cell_size * -1):
                     distance_to_move = np.rint(self.distance_moved_x_select / (self.cell_size * -1)).astype(int)
-                    self.toggle_cell_based_on_position(x, y)
+                    self.toggle_cell_based_on_position(x, y, turn_on=True)
                     self.distance_moved_x_select = self.distance_moved_x_select - distance_to_move * (self.cell_size * -1)
             
             if not dy == 0:
                 self.distance_moved_y_select = self.distance_moved_y_select + dy
                 if self.distance_moved_y_select > self.cell_size :
                     distance_to_move = np.rint(self.distance_moved_y_select / self.cell_size).astype(int)
-                    self.toggle_cell_based_on_position(x, y)
+                    self.toggle_cell_based_on_position(x, y, turn_on=True)
                     self.distance_moved_y_select = self.distance_moved_y_select - distance_to_move * self.cell_size
             
                 elif self.distance_moved_y_select < (self.cell_size * -1):
                     distance_to_move = np.rint(self.distance_moved_y_select / (self.cell_size * -1)).astype(int)
-                    self.toggle_cell_based_on_position(x, y)
+                    self.toggle_cell_based_on_position(x, y, turn_on=True)
                     self.distance_moved_y_select = self.distance_moved_y_select - distance_to_move * (self.cell_size * -1)
             
+        if buttons & pyglet.window.mouse.RIGHT:
+            if not dx == 0:
+                self.distance_moved_x_select = self.distance_moved_x_select + dx
+                if self.distance_moved_x_select > self.cell_size :
+                    distance_to_move = np.rint(self.distance_moved_x_select / self.cell_size).astype(int)
+                    self.toggle_cell_based_on_position(x, y, turn_on=False)
+                    self.distance_moved_x_select = self.distance_moved_x_select - distance_to_move * self.cell_size
+            
+                elif self.distance_moved_x_select < (self.cell_size * -1):
+                    distance_to_move = np.rint(self.distance_moved_x_select / (self.cell_size * -1)).astype(int)
+                    self.toggle_cell_based_on_position(x, y, turn_on=False)
+                    self.distance_moved_x_select = self.distance_moved_x_select - distance_to_move * (self.cell_size * -1)
+            
+            if not dy == 0:
+                self.distance_moved_y_select = self.distance_moved_y_select + dy
+                if self.distance_moved_y_select > self.cell_size :
+                    distance_to_move = np.rint(self.distance_moved_y_select / self.cell_size).astype(int)
+                    self.toggle_cell_based_on_position(x, y, turn_on=False)
+                    self.distance_moved_y_select = self.distance_moved_y_select - distance_to_move * self.cell_size
+            
+                elif self.distance_moved_y_select < (self.cell_size * -1):
+                    distance_to_move = np.rint(self.distance_moved_y_select / (self.cell_size * -1)).astype(int)
+                    self.toggle_cell_based_on_position(x, y, turn_on=False)
+                    self.distance_moved_y_select = self.distance_moved_y_select - distance_to_move * (self.cell_size * -1)
 
         if buttons & pyglet.window.mouse.MIDDLE:
             
@@ -218,7 +245,7 @@ class Window():
         if(self.debug_state):
             print(f"Drawing took {(time.time() - start)*1000:.2f} ms")
 
-    def toggle_cell_based_on_position(self, x, y):
+    def toggle_cell_based_on_position(self, x, y, turn_on):
         if(x <= self.simulation_window_offset):
                 return
             
@@ -232,10 +259,10 @@ class Window():
         pos_relative_to_view_size_x = cell_position_x - (self.view_size/2)
         col = np.rint(self.view_center[1] + pos_relative_to_view_size_x).astype(int)
         
-        if(self.game_engine.old_generation_array[row][col]):
-                self.game_engine.old_generation_array[row][col] = 0
-        else:
+        if turn_on:
                 self.game_engine.old_generation_array[row][col] = 1
+        else:
+                self.game_engine.old_generation_array[row][col] = 0
     
     def draw_texture(self):
 
