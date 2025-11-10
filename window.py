@@ -144,7 +144,7 @@ class Window():
                  self.game_engine.old_generation_array[row][col] = 1
 
     def on_mouse_drag(self, x, y, dx, dy, buttons, modifiers):
-        if buttons & pyglet.window.mouse.RIGHT:
+        if buttons & pyglet.window.mouse.MIDDLE:
             
             if not dx == 0:
                 # calculate total pixels moved between handler events. eg DMX: 15 and DX: 30
