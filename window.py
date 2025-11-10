@@ -26,7 +26,8 @@ class Window():
         self.cell_size = cell_size
         self.view_center = [self.number_of_rows//2, self.number_of_columns//2]
         self.view_size = 1024//self.cell_size
-        
+        self.distance_moved_x = 0
+        self.distance_moved_y = 0
 
         # Textures & batch
         self.texture = None
@@ -40,6 +41,7 @@ class Window():
         # Push and setcustom handlers
         self.window.push_handlers(on_draw=self.on_draw)
         self.window.push_handlers(on_mouse_press=self.on_mouse_press)
+        self.window.push_handlers(on_mouse_drag=self.on_mouse_drag)
         self.window.push_handlers(on_mouse_scroll=self.on_mouse_scroll)  
         self.window.push_handlers(self.decrease_fps_button)
         self.window.push_handlers(self.increase_fps_button)
@@ -133,7 +135,40 @@ class Window():
             else:
                  self.game_engine.old_generation_array[row][col] = 1
 
-        pass
+    def on_mouse_drag(self, x, y, dx, dy, buttons, modifiers):
+        if buttons & pyglet.window.mouse.RIGHT:
+            
+            if not dx == 0:
+                # calculate total pixels moved between handler events. eg DMX: 15 and DX: 30
+                self.distance_moved_x = self.distance_moved_x + dx
+                # check if distance moved is greater than a cell. eg Cell: 16, so check if 15+30 > 16
+                if self.distance_moved_x > self.cell_size :
+                    # calculate if multiple cells have been crossed. eg 45/16 = 2.8125, so 2 have been crossed
+                    distance_to_move = np.rint(self.distance_moved_x / self.cell_size).astype(int)
+                    # move distance based on cells crossed. eg 2.8125 > 2 cells crossed
+                    self.view_center[1] = self.view_center[1] - distance_to_move
+                    # remainder 0.8125 times cellsize is distance moved for next event: 0.8125 * 16 = 13
+                    # save this distance
+                    self.distance_moved_x = self.distance_moved_x - distance_to_move * self.cell_size
+                
+                elif self.distance_moved_x < (self.cell_size * -1):
+                    distance_to_move = np.rint(self.distance_moved_x / (self.cell_size * -1)).astype(int)
+                    self.view_center[1] = self.view_center[1] + distance_to_move
+                    self.distance_moved_x = self.distance_moved_x - distance_to_move * (self.cell_size * -1)
+            
+            
+            if not dy == 0:
+                self.distance_moved_y = self.distance_moved_y + dy
+                if self.distance_moved_y > self.cell_size :
+                    distance_to_move = np.rint(self.distance_moved_y / self.cell_size).astype(int)
+                    self.view_center[0] = self.view_center[0] - distance_to_move
+                    self.distance_moved_y = self.distance_moved_y - distance_to_move * self.cell_size
+                elif self.distance_moved_y < (self.cell_size * -1):
+                    distance_to_move = np.rint(self.distance_moved_y / (self.cell_size * -1)).astype(int)
+                    self.view_center[0] = self.view_center[0] + distance_to_move
+                    self.distance_moved_y= self.distance_moved_y - distance_to_move * (self.cell_size * -1)
+        
+        
 
     def on_mouse_scroll(self, x, y, scroll_x, scroll_y):
         if scroll_y > 0:
