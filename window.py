@@ -26,8 +26,10 @@ class Window():
         self.cell_size = cell_size
         self.view_center = [self.number_of_rows//2, self.number_of_columns//2]
         self.view_size = 1024//self.cell_size
-        self.distance_moved_x = 0
-        self.distance_moved_y = 0
+        self.distance_moved_x_pan = 0
+        self.distance_moved_y_pan = 0
+        self.distance_moved_x_select = 0
+        self.distance_moved_y_select = 0
 
         # Textures & batch
         self.texture = None
@@ -125,56 +127,67 @@ class Window():
     
     def on_mouse_press(self, x, y, button, modifiers):
         if(button == pyglet.window.mouse.LEFT):
-            if(x <= self.simulation_window_offset):
-                return
-            
-            # calculate y position to toggle cell
-            cell_position_y = y//self.cell_size
-            pos_relative_to_view_size_y = cell_position_y - (self.view_size/2)
-            row = np.rint(self.view_center[0] + pos_relative_to_view_size_y).astype(int)
-            
-            # calculate x position to toggle cell
-            cell_position_x = (x - self.simulation_window_offset)//self.cell_size
-            pos_relative_to_view_size_x = cell_position_x - (self.view_size/2)
-            col = np.rint(self.view_center[1] + pos_relative_to_view_size_x).astype(int)
-            
-            if(self.game_engine.old_generation_array[row][col]):
-                 self.game_engine.old_generation_array[row][col] = 0
-            else:
-                 self.game_engine.old_generation_array[row][col] = 1
+            self.toggle_cell_based_on_position(x, y)
 
     def on_mouse_drag(self, x, y, dx, dy, buttons, modifiers):
+        
+        if buttons & pyglet.window.mouse.LEFT:
+            if not dx == 0:
+                self.distance_moved_x_select = self.distance_moved_x_select + dx
+                if self.distance_moved_x_select > self.cell_size :
+                    distance_to_move = np.rint(self.distance_moved_x_select / self.cell_size).astype(int)
+                    self.toggle_cell_based_on_position(x, y)
+                    self.distance_moved_x_select = self.distance_moved_x_select - distance_to_move * self.cell_size
+            
+                elif self.distance_moved_x_select < (self.cell_size * -1):
+                    distance_to_move = np.rint(self.distance_moved_x_select / (self.cell_size * -1)).astype(int)
+                    self.toggle_cell_based_on_position(x, y)
+                    self.distance_moved_x_select = self.distance_moved_x_select - distance_to_move * (self.cell_size * -1)
+            
+            if not dy == 0:
+                self.distance_moved_y_select = self.distance_moved_y_select + dy
+                if self.distance_moved_y_select > self.cell_size :
+                    distance_to_move = np.rint(self.distance_moved_y_select / self.cell_size).astype(int)
+                    self.toggle_cell_based_on_position(x, y)
+                    self.distance_moved_y_select = self.distance_moved_y_select - distance_to_move * self.cell_size
+            
+                elif self.distance_moved_y_select < (self.cell_size * -1):
+                    distance_to_move = np.rint(self.distance_moved_y_select / (self.cell_size * -1)).astype(int)
+                    self.toggle_cell_based_on_position(x, y)
+                    self.distance_moved_y_select = self.distance_moved_y_select - distance_to_move * (self.cell_size * -1)
+            
+
         if buttons & pyglet.window.mouse.MIDDLE:
             
             if not dx == 0:
                 # calculate total pixels moved between handler events. eg DMX: 15 and DX: 30
-                self.distance_moved_x = self.distance_moved_x + dx
+                self.distance_moved_x_pan = self.distance_moved_x_pan + dx
                 # check if distance moved is greater than a cell. eg Cell: 16, so check if 15+30 > 16
-                if self.distance_moved_x > self.cell_size :
+                if self.distance_moved_x_pan > self.cell_size :
                     # calculate if multiple cells have been crossed. eg 45/16 = 2.8125, so 2 have been crossed
-                    distance_to_move = np.rint(self.distance_moved_x / self.cell_size).astype(int)
+                    distance_to_move = np.rint(self.distance_moved_x_pan / self.cell_size).astype(int)
                     # move distance based on cells crossed. eg 2.8125 > 2 cells crossed
                     self.view_center[1] = self.view_center[1] - distance_to_move
                     # remainder 0.8125 times cellsize is distance moved for next event: 0.8125 * 16 = 13
                     # save this distance
-                    self.distance_moved_x = self.distance_moved_x - distance_to_move * self.cell_size
+                    self.distance_moved_x_pan = self.distance_moved_x_pan - distance_to_move * self.cell_size
                 
-                elif self.distance_moved_x < (self.cell_size * -1):
-                    distance_to_move = np.rint(self.distance_moved_x / (self.cell_size * -1)).astype(int)
+                elif self.distance_moved_x_pan < (self.cell_size * -1):
+                    distance_to_move = np.rint(self.distance_moved_x_pan / (self.cell_size * -1)).astype(int)
                     self.view_center[1] = self.view_center[1] + distance_to_move
-                    self.distance_moved_x = self.distance_moved_x - distance_to_move * (self.cell_size * -1)
+                    self.distance_moved_x_pan = self.distance_moved_x_pan - distance_to_move * (self.cell_size * -1)
             
             
             if not dy == 0:
-                self.distance_moved_y = self.distance_moved_y + dy
-                if self.distance_moved_y > self.cell_size :
-                    distance_to_move = np.rint(self.distance_moved_y / self.cell_size).astype(int)
+                self.distance_moved_y_pan = self.distance_moved_y_pan + dy
+                if self.distance_moved_y_pan > self.cell_size :
+                    distance_to_move = np.rint(self.distance_moved_y_pan / self.cell_size).astype(int)
                     self.view_center[0] = self.view_center[0] - distance_to_move
-                    self.distance_moved_y = self.distance_moved_y - distance_to_move * self.cell_size
-                elif self.distance_moved_y < (self.cell_size * -1):
-                    distance_to_move = np.rint(self.distance_moved_y / (self.cell_size * -1)).astype(int)
+                    self.distance_moved_y_pan = self.distance_moved_y_pan - distance_to_move * self.cell_size
+                elif self.distance_moved_y_pan < (self.cell_size * -1):
+                    distance_to_move = np.rint(self.distance_moved_y_pan / (self.cell_size * -1)).astype(int)
                     self.view_center[0] = self.view_center[0] + distance_to_move
-                    self.distance_moved_y= self.distance_moved_y - distance_to_move * (self.cell_size * -1)
+                    self.distance_moved_y_pan= self.distance_moved_y_pan - distance_to_move * (self.cell_size * -1)
         
         
 
@@ -205,6 +218,25 @@ class Window():
         if(self.debug_state):
             print(f"Drawing took {(time.time() - start)*1000:.2f} ms")
 
+    def toggle_cell_based_on_position(self, x, y):
+        if(x <= self.simulation_window_offset):
+                return
+            
+        # calculate y position to toggle cell
+        cell_position_y = y//self.cell_size
+        pos_relative_to_view_size_y = cell_position_y - (self.view_size/2)
+        row = np.rint(self.view_center[0] + pos_relative_to_view_size_y).astype(int)
+        
+        # calculate x position to toggle cell
+        cell_position_x = (x - self.simulation_window_offset)//self.cell_size
+        pos_relative_to_view_size_x = cell_position_x - (self.view_size/2)
+        col = np.rint(self.view_center[1] + pos_relative_to_view_size_x).astype(int)
+        
+        if(self.game_engine.old_generation_array[row][col]):
+                self.game_engine.old_generation_array[row][col] = 0
+        else:
+                self.game_engine.old_generation_array[row][col] = 1
+    
     def draw_texture(self):
 
         arr = np.array(self.game_engine.old_generation_array, dtype=np.uint8)
