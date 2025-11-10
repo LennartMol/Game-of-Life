@@ -127,9 +127,17 @@ class Window():
         if(button == pyglet.window.mouse.LEFT):
             if(x <= self.simulation_window_offset):
                 return
-            col = np.rint((((x-self.simulation_window_offset) // self.cell_size) + (self.number_of_columns - self.view_size)//2) - ((x-self.simulation_window_offset) % self.cell_size // self.view_size)).astype(int)
-            row = np.rint(((y // self.cell_size) + (self.number_of_rows - self.view_size)//2) - (y % self.cell_size // self.view_size)).astype(int)
-
+            
+            # calculate y position to toggle cell
+            cell_position_y = y//self.cell_size
+            pos_relative_to_view_size_y = cell_position_y - (self.view_size/2)
+            row = np.rint(self.view_center[0] + pos_relative_to_view_size_y).astype(int)
+            
+            # calculate x position to toggle cell
+            cell_position_x = (x - self.simulation_window_offset)//self.cell_size
+            pos_relative_to_view_size_x = cell_position_x - (self.view_size/2)
+            col = np.rint(self.view_center[1] + pos_relative_to_view_size_x).astype(int)
+            
             if(self.game_engine.old_generation_array[row][col]):
                  self.game_engine.old_generation_array[row][col] = 0
             else:
