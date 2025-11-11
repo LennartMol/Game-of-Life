@@ -22,7 +22,6 @@ class Window():
         self.window = pyglet.window.Window(self.window_width, self.window_height, self.title)
 
         # Viewed simulation window
-        # 1024x1024 -> Size 1 (1024), size 2 (512), size 4 (256), size 8 (128), 16 (64), 32 (32)
         self.cell_size = cell_size
         self.view_center = [self.number_of_rows//2, self.number_of_columns//2]
         self.view_size = 1024//self.cell_size
@@ -215,8 +214,6 @@ class Window():
                     distance_to_move = np.rint(self.distance_moved_y_pan / (self.cell_size * -1)).astype(int)
                     self.view_center[0] = self.view_center[0] + distance_to_move
                     self.distance_moved_y_pan= self.distance_moved_y_pan - distance_to_move * (self.cell_size * -1)
-        
-        
 
     def on_mouse_scroll(self, x, y, scroll_x, scroll_y):
         if scroll_y > 0:
@@ -259,6 +256,10 @@ class Window():
         pos_relative_to_view_size_x = cell_position_x - (self.view_size/2)
         col = np.rint(self.view_center[1] + pos_relative_to_view_size_x).astype(int)
         
+        # out of bounds click
+        if row >= 1024 or col >= 1024:
+            return
+
         if turn_on:
                 self.game_engine.old_generation_array[row][col] = 1
         else:
