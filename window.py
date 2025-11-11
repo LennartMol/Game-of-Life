@@ -270,54 +270,46 @@ class Window():
 
         self.view_size = np.rint(1024//self.cell_size).astype(int)
 
+        offset_y = 0
         r0 = self.view_center[0] - self.view_size//2
         if r0 < 0:
-            offset_x = r0
+            offset_y = r0
             r0 = 0
         r1 = self.view_center[0] + self.view_size//2
         if r1 > 1024:
-            offset_x = r1
+            offset_y = r1 - 1024
             r1 = 1024
+        
+        offset_x = 0
         c0 = self.view_center[1] - self.view_size//2
         if c0 < 0:
-            offset_y = c0
+            offset_x = c0
             c0 = 0
         c1 = self.view_center[1] + self.view_size//2
         if c1 > 1024:
-            offset_y = c1
+            offset_x = c1 - 1024
             c1 = 1024
 
         arr_center = arr[r0:r1, c0:c1]
-        full_array = np.full((self.view_size, self.view_size), 2)
 
-        example_arr_center = np.array([[2, 3, 4],
-                                       [5, 6, 7]])
+        end_arr = arr_center        
+        if (not offset_x == 0 or not offset_y == 0):
+            array_x_offset = np.full((arr_center.shape[0], np.abs(offset_x)), 100)
+            if offset_x > 0:
+                end_arr = np.hstack((arr_center, array_x_offset))
+            else:
+                end_arr = np.hstack((array_x_offset, arr_center))
+            
+            array_y_offset = np.full((np.abs(offset_y),end_arr.shape[1]), 100)
+            if offset_y > 0:
+                end_arr = np.vstack((end_arr, array_y_offset))
+            else:
+                end_arr = np.vstack((array_y_offset, end_arr))
         
-        end_arr = None
-        
-        test_offset_x = 2
-        test_offset_y = 3
-        total_array_size = 5
-
-        array_x_offset = np.full((np.abs(test_offset_x),example_arr_center.shape[0]), 100)
-        
-
-        if test_offset_x > 0:
-            end_arr = np.hstack((example_arr_center, array_x_offset))
-        else:
-            end_arr = np.hstack((array_x_offset, example_arr_center))
-        
-        array_y_offset = np.full((np.abs(test_offset_y),end_arr.shape[1]), 100)
-        
-        if test_offset_y > 0:
-            end_arr = np.vstack((array_y_offset, end_arr))
-        else:
-            end_arr = np.vstack((end_arr, array_y_offset))
-        
-        test = 1
         
         img_data = np.zeros((self.view_size, self.view_size, 3), dtype=np.uint8)
-        img_data[arr_center == 1] = (255, 255, 255)  # white for alive, black by default
+        img_data[end_arr == 1] = (255, 255, 255)  # white for alive, black by default
+        img_data[end_arr == 100] = (100, 100, 100) # out of bounds color
 
         raw_bytes = img_data[::].tobytes()
 
