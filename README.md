@@ -5,13 +5,24 @@ The project uses **UV** for dependency and environment management, so no local P
 
 ---
 
-## Install & Run (macOS / Linux)
+## Install & Run (macOS / Linux) - bash
 
 ```bash
+# Clone project
+git clone https://github.com/LennartMol/Game-of-Life.git
+cd Game-of-Life
+
+# Download and run the installer
 curl -sSL https://raw.githubusercontent.com/LennartMol/Game-of-Life/refs/heads/main/install.sh | bash
 ```
-## Install & Run (Windows) 
+## Install & Run (Windows) - PowerShell
 
 ```powershell
-irm https://raw.githubusercontent.com/LennartMol/Game-of-Life/refs/heads/main/install.sh | iex
+# Clone project
+git clone https://github.com/LennartMol/Game-of-Life.git
+cd Game-of-Life
+
+# Download and run the installer
+iwr https://raw.githubusercontent.com/LennartMol/Game-of-Life/refs/heads/main/install.ps1 -OutFile install.ps1
+powershell -ExecutionPolicy Bypass -File install.ps1
 ```
