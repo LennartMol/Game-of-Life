@@ -27,3 +27,5 @@ uv sync
 
 Write-Host "Starting Game of Life..."
 uv run python main.py
+
+pause
