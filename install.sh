@@ -5,3 +5,5 @@ if ! command -v uv &> /dev/null; then
 fi
 
 uv sync
+
+uv run python main.py
