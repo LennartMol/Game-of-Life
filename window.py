@@ -39,6 +39,7 @@ class Window():
         self.increase_fps_button = self.create_increase_fps_button()
         self.FPS_text_input = self.create_FPS_text_input_field()
         self.generations_passed_label= self.create_generations_passed_label()
+        self.start_button = self.create_start_button()
         
         # Push and setcustom handlers
         self.window.push_handlers(on_draw=self.on_draw)
@@ -47,45 +48,45 @@ class Window():
         self.window.push_handlers(on_mouse_scroll=self.on_mouse_scroll)  
         self.window.push_handlers(self.decrease_fps_button)
         self.window.push_handlers(self.increase_fps_button)
+        self.window.push_handlers(self.start_button)
         self.window.push_handlers(self.FPS_text_input)
         self.FPS_text_input.set_handler('on_commit', self.FPS_text_input_on_commit_handler)
         self.decrease_fps_button.set_handler('on_press', self.decrease_fps_button_on_press_handler)
         self.increase_fps_button.set_handler('on_press', self.increase_fps_button_on_press_handler)
+        self.start_button.set_handler('on press', self.start_button_handler)
 
         # Debug flag
         self.debug_state = debug
     
     def create_decrease_fps_button(self):
-        self.decrease_pressed = pyglet.resource.image("Images/button_decrease_pressed.png", border=1)
-        self.decrease_pressed.width = 50
-        self.decrease_pressed.height = 50   
-        self.decrease_unpressed = pyglet.resource.image("Images/button_decrease_unpressed.png", border=1)
-        self.decrease_unpressed.width = 50 
-        self.decrease_unpressed.height = 50                                                                                                                               
-
+        self.decrease = pyglet.resource.image("Images/button_minus.png")
+        self.decrease.width = 40
+        self.decrease.height = 40                                                                                                                                
         return pyglet.gui.PushButton(x=0, 
                                      y= self.window_height - 50, 
-                                     pressed=self.decrease_pressed,
-                                     unpressed=self.decrease_unpressed,
-                                     hover=None,
-                                     batch=self.batch,
-                                     group=None)
+                                     pressed=self.decrease,
+                                     unpressed=self.decrease,
+                                     batch=self.batch)
         
     def create_increase_fps_button(self):
-        self.increase_pressed = pyglet.resource.image("Images/button_increase_pressed.png")
-        self.increase_pressed.width = 50
-        self.increase_pressed.height = 50   
-        self.increase_unpressed = pyglet.resource.image("Images/button_increase_unpressed.png")
-        self.increase_unpressed.width = 50 
-        self.increase_unpressed.height = 50 
-
+        self.increase = pyglet.resource.image("Images/button_plus.png")
+        self.increase.width = 40
+        self.increase.height = 40   
         return pyglet.gui.PushButton(x=100, 
                                      y= self.window_height - 50, 
-                                     pressed=self.increase_pressed,
-                                     unpressed=self.increase_unpressed,
-                                     hover=None,
-                                     batch=self.batch,
-                                     group=None)
+                                     pressed=self.increase,
+                                     unpressed=self.increase,
+                                     batch=self.batch)
+    
+    def create_start_button(self):
+        self.start = pyglet.resource.image("Images/button_start.png")
+        self.start.width = 40
+        self.start.height = 40
+        return pyglet.gui.PushButton(x=100,
+                                     y=self.window_height - 200,
+                                     pressed=self.start,
+                                     unpressed=self.start,
+                                     batch=self.batch)
 
     def create_FPS_text_input_field(self):
         return pyglet.gui.TextEntry(str(self.game_engine.get_generations_per_second()),
@@ -93,6 +94,7 @@ class Window():
                                     y= self.window_height - 35,
                                     width=40,
                                     batch=self.batch)
+    
     def create_generations_passed_label(self):
         return pyglet.text.Label('0',
                                  font_size=20,
@@ -132,6 +134,9 @@ class Window():
         else:
             self.FPS_text_input.value = str(int(self.FPS_text_input.value) + 1)
         self.game_engine.update_generations_per_second(int(self.FPS_text_input.value))
+
+    def start_button_handler(self):
+        pass
     
     def on_mouse_press(self, x, y, button, modifiers):
         if(button == pyglet.window.mouse.LEFT):
