@@ -18,7 +18,7 @@ curl -sSL https://raw.githubusercontent.com/LennartMol/Game-of-Life/refs/heads/m
 ## Install & Run (Windows) - PowerShell
 
 ```bash
-# Clone project
+# Clone project (or download ZIP and unpack) and go to directory
 git clone https://github.com/LennartMol/Game-of-Life.git
 cd Game-of-Life
 
