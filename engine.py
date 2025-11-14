@@ -13,12 +13,13 @@ class Engine():
         # Arrays
         self.old_generation_array = np.array(array, dtype=np.uint8)
 
-        # simulation speed
+        # Simulation speed
         self.__generations_per_second = 0
         self.__number_of_generations_per_game_loop = 1
         self.frame_counter = 1
         self.skip_most_frames = None
         self.divider = None
+        self.number_of_generations_passed = 0
 
         # Performance settings
         self.cells_loop_border = cells_loop_border
@@ -58,6 +59,7 @@ class Engine():
             self.old_generation_array = self.simulate_function_loop(self.old_generation_array)
         else: 
             self.old_generation_array = self.simulate_function(self.old_generation_array)
+        self.number_of_generations_passed = self.number_of_generations_passed + 1
 
 
     def update_generations_per_second(self, GPS):

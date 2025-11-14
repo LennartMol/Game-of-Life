@@ -38,6 +38,7 @@ class Window():
         self.decrease_fps_button = self.create_decrease_fps_button()
         self.increase_fps_button = self.create_increase_fps_button()
         self.FPS_text_input = self.create_FPS_text_input_field()
+        self.generations_passed_label= self.create_generations_passed_label()
         
         # Push and setcustom handlers
         self.window.push_handlers(on_draw=self.on_draw)
@@ -92,6 +93,14 @@ class Window():
                                     y= self.window_height - 35,
                                     width=40,
                                     batch=self.batch)
+    def create_generations_passed_label(self):
+        return pyglet.text.Label('0',
+                                 font_size=20,
+                                 x=55,
+                                 y=self.window_height - 55,
+                                 anchor_x='center',
+                                 anchor_y='center',
+                                 batch=self.batch)
 
     def FPS_text_input_on_commit_handler(self, widget, input):
         if(int(input) > 1260 ):
@@ -234,6 +243,8 @@ class Window():
             start = time.time()
 
         self.window.clear()
+
+        self.generations_passed_label.text = str(self.game_engine.number_of_generations_passed)
 
         self.draw_texture()
 

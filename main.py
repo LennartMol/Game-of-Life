@@ -14,7 +14,7 @@ game_engine = engine.Engine(array=test_arrays.glider_gun_array,
                             debug="Frames")
 
 game_window = window.Window(game_engine=game_engine,
-                            cell_size=32,
+                            cell_size=1,
                             window_title='Game of Life',
                             debug=debug_state)
 
