@@ -1,0 +1,11 @@
+[project]
+name = "game-of-life"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+requires-python = ">=3.11"
+dependencies = [
+    "numba>=0.62.1",
+    "numpy==2.3.3",
+    "pyglet==2.1.9",
+]
