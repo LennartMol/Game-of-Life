@@ -38,8 +38,11 @@ class Window():
         self.decrease_fps_button = self.create_decrease_fps_button()
         self.increase_fps_button = self.create_increase_fps_button()
         self.FPS_text_input = self.create_FPS_text_input_field()
-        self.generations_passed_label= self.create_generations_passed_label()
+        self.generations_passed_label = self.create_generations_passed_label()
+        self.status_label = self.create_status_label()
+        self.pause_button = self.create_pause_button()
         self.start_button = self.create_start_button()
+        
         
         # Push and setcustom handlers
         self.window.push_handlers(on_draw=self.on_draw)
@@ -49,11 +52,13 @@ class Window():
         self.window.push_handlers(self.decrease_fps_button)
         self.window.push_handlers(self.increase_fps_button)
         self.window.push_handlers(self.start_button)
+        self.window.push_handlers(self.pause_button)
         self.window.push_handlers(self.FPS_text_input)
         self.FPS_text_input.set_handler('on_commit', self.FPS_text_input_on_commit_handler)
         self.decrease_fps_button.set_handler('on_press', self.decrease_fps_button_on_press_handler)
         self.increase_fps_button.set_handler('on_press', self.increase_fps_button_on_press_handler)
-        self.start_button.set_handler('on press', self.start_button_handler)
+        self.start_button.set_handler('on_press', self.start_button_handler)
+        self.pause_button.set_handler('on_press', self.pause_button_handler)
 
         # Debug flag
         self.debug_state = debug
@@ -87,6 +92,16 @@ class Window():
                                      pressed=self.start,
                                      unpressed=self.start,
                                      batch=self.batch)
+    
+    def create_pause_button(self):
+        self.pause = pyglet.resource.image("Images/button_pause.png")
+        self.pause.width = 40
+        self.pause.height = 40
+        return pyglet.gui.PushButton(x=50,
+                                     y=self.window_height - 200,
+                                     pressed=self.pause,
+                                     unpressed=self.pause,
+                                     batch=self.batch)
 
     def create_FPS_text_input_field(self):
         return pyglet.gui.TextEntry(str(self.game_engine.get_generations_per_second()),
@@ -100,6 +115,15 @@ class Window():
                                  font_size=20,
                                  x=55,
                                  y=self.window_height - 55,
+                                 anchor_x='center',
+                                 anchor_y='center',
+                                 batch=self.batch)
+    
+    def create_status_label(self):
+        return pyglet.text.Label('Simulation paused',
+                                 font_size=10,
+                                 x=55,
+                                 y=self.window_height - 100,
                                  anchor_x='center',
                                  anchor_y='center',
                                  batch=self.batch)
@@ -135,9 +159,18 @@ class Window():
             self.FPS_text_input.value = str(int(self.FPS_text_input.value) + 1)
         self.game_engine.update_generations_per_second(int(self.FPS_text_input.value))
 
-    def start_button_handler(self):
-        pass
-    
+    def start_button_handler(self, widget):
+        if (int(self.FPS_text_input.value) == 0):
+            self.FPS_text_input.value = str(5)
+        self.game_engine.update_generations_per_second(int(self.FPS_text_input.value))
+        self.game_engine.paused = False
+        self.status_label.text = "Simulation running"
+
+    def pause_button_handler(self, widget):
+        self.game_engine.update_generations_per_second(0)
+        self.game_engine.paused = True
+        self.status_label.text = "Simulation paused"
+
     def on_mouse_press(self, x, y, button, modifiers):
         if(button == pyglet.window.mouse.LEFT):
             self.toggle_cell_based_on_position(x, y, turn_on=True)

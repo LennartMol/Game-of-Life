@@ -20,6 +20,7 @@ class Engine():
         self.skip_most_frames = None
         self.divider = None
         self.number_of_generations_passed = 0
+        self.paused = True
 
         # Performance settings
         self.cells_loop_border = cells_loop_border
@@ -55,6 +56,8 @@ class Engine():
             print(row)
 
     def simulate_single_generation(self):
+        if self.paused:
+            return
         if self.cells_loop_border:
             self.old_generation_array = self.simulate_function_loop(self.old_generation_array)
         else: 
