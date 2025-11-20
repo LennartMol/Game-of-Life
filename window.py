@@ -296,32 +296,40 @@ class Window():
         if r1 > 1024:
             offset_y = r1 - 1024
             r1 = 1024
+        elif r1 < 0:
+            r1 = 0
         
         offset_x = 0
         c0 = self.view_center[1] - self.view_size//2
         if c0 < 0:
-            offset_x = c0
-            c0 = 0
+                offset_x = c0 
+                c0 = 0
         c1 = self.view_center[1] + self.view_size//2
         if c1 > 1024:
             offset_x = c1 - 1024
             c1 = 1024
+        elif c1 < 0:
+            c1 = 0
 
         arr_center = arr[r0:r1, c0:c1]
 
         end_arr = arr_center        
         if (not offset_x == 0 or not offset_y == 0):
-            array_x_offset = np.full((arr_center.shape[0], np.abs(offset_x)), 100)
-            if offset_x > 0:
-                end_arr = np.hstack((arr_center, array_x_offset))
-            else:
-                end_arr = np.hstack((array_x_offset, arr_center))
+            array_x_offset = np.full((arr_center.shape[0], abs(offset_x)), 100)
             
-            array_y_offset = np.full((np.abs(offset_y),end_arr.shape[1]), 100)
-            if offset_y > 0:
-                end_arr = np.vstack((end_arr, array_y_offset))
+            if offset_x >= self.view_size or offset_x <= -abs(self.view_size) or offset_y >= 1024 or offset_y <= -abs(self.view_size):
+                end_arr = np.full((self.view_size, self.view_size), 100)
             else:
-                end_arr = np.vstack((array_y_offset, end_arr))
+                if offset_x > 0:
+                    end_arr = np.hstack((arr_center, array_x_offset))
+                else:
+                    end_arr = np.hstack((array_x_offset, arr_center))
+                
+                array_y_offset = np.full((np.abs(offset_y),end_arr.shape[1]), 100)
+                if offset_y > 0:
+                    end_arr = np.vstack((end_arr, array_y_offset))
+                else:
+                    end_arr = np.vstack((array_y_offset, end_arr))
         
         
         img_data = np.zeros((self.view_size, self.view_size, 3), dtype=np.uint8)
