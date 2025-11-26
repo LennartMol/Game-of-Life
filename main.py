@@ -1,5 +1,5 @@
 import engine
-import test_arrays
+import grids
 import pyglet
 import window
 import time
@@ -7,7 +7,7 @@ import threading
 
 debug_state = False
 
-game_engine = engine.Engine(array=test_arrays.glider_gun_array,
+game_engine = engine.Engine(array=grids.glider_gun_array,
                             cells_loop_border=True,
                             caching=True,
                             precompiler=True,
