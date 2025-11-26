@@ -2,13 +2,15 @@ import pyglet
 import time
 import numpy as np
 from pyglet.gl import gl
+import grids
 
 class Window():
 
-    def __init__(self, game_engine, cell_size=20, window_title='Game of Life', debug=False):
+    def __init__(self, game_engine, game_grids, cell_size=20, window_title='Game of Life', debug=False):
 
         # Game engine instance
         self.game_engine = game_engine
+        self.game_grid = game_grids
 
         # Grid variables
         self.number_of_rows = self.game_engine.number_of_rows
@@ -43,6 +45,7 @@ class Window():
         self.status_label = self.create_status_label()
         self.pause_button = self.create_pause_button()
         self.start_button = self.create_start_button()
+        self.reset_button = self.create_reset_button()
         
         
         # Push and setcustom handlers
@@ -55,20 +58,21 @@ class Window():
         self.window.push_handlers(self.increase_fps_button)
         self.window.push_handlers(self.start_button)
         self.window.push_handlers(self.pause_button)
+        self.window.push_handlers(self.reset_button)
         self.window.push_handlers(self.FPS_text_input)
         self.FPS_text_input.set_handler('on_commit', self.FPS_text_input_on_commit_handler)
         self.decrease_fps_button.set_handler('on_press', self.decrease_fps_button_on_press_handler)
         self.increase_fps_button.set_handler('on_press', self.increase_fps_button_on_press_handler)
         self.start_button.set_handler('on_press', self.start_button_handler)
         self.pause_button.set_handler('on_press', self.pause_button_handler)
+        self.reset_button.set_handler('on_press', self.reset_button_handler)
 
         # Debug flag
         self.debug_state = debug
     
     def create_decrease_fps_button(self):
         self.decrease = pyglet.resource.image("Images/button_minus.png")
-        self.decrease.width = 40
-        self.decrease.height = 40                                                                                                                                
+        self.decrease.width = self.decrease.height = 40                                                                                                                                
         return pyglet.gui.PushButton(x=0, 
                                      y= self.window_height - 50, 
                                      pressed=self.decrease,
@@ -77,8 +81,7 @@ class Window():
         
     def create_increase_fps_button(self):
         self.increase = pyglet.resource.image("Images/button_plus.png")
-        self.increase.width = 40
-        self.increase.height = 40   
+        self.increase.width = self.increase.height = 40   
         return pyglet.gui.PushButton(x=100, 
                                      y= self.window_height - 50, 
                                      pressed=self.increase,
@@ -87,8 +90,7 @@ class Window():
     
     def create_start_button(self):
         self.start = pyglet.resource.image("Images/button_start.png")
-        self.start.width = 40
-        self.start.height = 40
+        self.start.width = self.start.height = 40
         return pyglet.gui.PushButton(x=100,
                                      y=self.window_height - 200,
                                      pressed=self.start,
@@ -97,13 +99,22 @@ class Window():
     
     def create_pause_button(self):
         self.pause = pyglet.resource.image("Images/button_pause.png")
-        self.pause.width = 40
-        self.pause.height = 40
+        self.pause.width = self.pause.height = 40
         return pyglet.gui.PushButton(x=50,
                                      y=self.window_height - 200,
                                      pressed=self.pause,
                                      unpressed=self.pause,
                                      batch=self.batch)
+    
+    def create_reset_button(self):
+        self.reset = pyglet.resource.image("Images/button_reset.png")
+        self.reset.width = self.reset.height = 40
+        return pyglet.gui.PushButton(x=50,
+                                     y=self.window_height - 250,
+                                     pressed=self.reset,
+                                     unpressed=self.reset,
+                                     batch=self.batch)
+        
 
     def create_FPS_text_input_field(self):
         return pyglet.gui.TextEntry(str(self.game_engine.get_generations_per_second()),
@@ -172,6 +183,12 @@ class Window():
         self.game_engine.update_generations_per_second(0)
         self.game_engine.paused = True
         self.status_label.text = "Simulation paused"
+    
+    def reset_button_handler(self, widget):
+        self.game_engine.update_generations_per_second(0)
+        self.game_engine.paused = True
+        self.status_label.text = "Simulation paused"
+        self.game_engine.old_generation_array = self.game_grid.empty_array
 
     def on_mouse_press(self, x, y, button, modifiers):
         if(button == pyglet.window.mouse.LEFT):

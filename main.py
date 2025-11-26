@@ -7,13 +7,16 @@ import threading
 
 debug_state = False
 
-game_engine = engine.Engine(array=grids.glider_gun_array,
+game_grids = grids.Grids()
+
+game_engine = engine.Engine(array=game_grids.glider_gun_array,
                             cells_loop_border=True,
                             caching=True,
                             precompiler=True,
                             debug="Frames")
 
 game_window = window.Window(game_engine=game_engine,
+                            game_grids=game_grids,
                             cell_size=1,
                             window_title='Game of Life',
                             debug=debug_state)
