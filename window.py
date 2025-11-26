@@ -173,8 +173,12 @@ class Window():
         self.game_engine.update_generations_per_second(int(self.FPS_text_input.value))
 
     def start_button_handler(self, widget):
-        if (int(self.FPS_text_input.value) == 0):
+        text_value = int(self.FPS_text_input.value)
+        
+        if (text_value == 0):
             self.FPS_text_input.value = str(5)
+        elif (text_value > 1260):
+            self.FPS_text_input.value = str(1260)
         self.game_engine.update_generations_per_second(int(self.FPS_text_input.value))
         self.game_engine.paused = False
         self.status_label.text = "Simulation running"
