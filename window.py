@@ -20,6 +20,7 @@ class Window():
         self.window_width = self.number_of_rows + self.simulation_window_offset
         self.window_height = self.number_of_columns
         self.window = pyglet.window.Window(self.window_width, self.window_height, self.title)
+        self.exit_program = False
 
         # Viewed simulation window
         self.cell_size = cell_size
@@ -46,6 +47,7 @@ class Window():
         
         # Push and setcustom handlers
         self.window.push_handlers(on_draw=self.on_draw)
+        self.window.push_handlers(on_close=self.on_close)
         self.window.push_handlers(on_mouse_press=self.on_mouse_press)
         self.window.push_handlers(on_mouse_drag=self.on_mouse_drag)
         self.window.push_handlers(on_mouse_scroll=self.on_mouse_scroll)  
@@ -275,7 +277,10 @@ class Window():
             else: 
                 self.cell_size = self.cell_size / 2 
                 self.texture = None
-
+    
+    def on_close(self):
+        self.exit_program = True
+    
     def on_draw(self):
         if(self.debug_state):
             start = time.time()

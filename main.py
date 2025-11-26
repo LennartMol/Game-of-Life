@@ -20,6 +20,9 @@ game_window = window.Window(game_engine=game_engine,
 
 def game_loop():
 
+    if(game_window.exit_program):
+        quit()
+
     if(debug_state):
         start = time.time()
 
