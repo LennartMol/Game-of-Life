@@ -23,6 +23,7 @@ class Window():
         self.window_height = self.number_of_columns
         self.window = pyglet.window.Window(self.window_width, self.window_height, self.title)
         self.exit_program = False
+        self.check_if_reset_successful = False
 
         # Viewed simulation window
         self.cell_size = cell_size
@@ -115,7 +116,6 @@ class Window():
                                      unpressed=self.reset,
                                      batch=self.batch)
         
-
     def create_FPS_text_input_field(self):
         return pyglet.gui.TextEntry(str(self.game_engine.get_generations_per_second()),
                                     x= 55,
@@ -191,8 +191,10 @@ class Window():
     def reset_button_handler(self, widget):
         self.game_engine.update_generations_per_second(0)
         self.game_engine.paused = True
-        self.status_label.text = "Simulation paused"
-        self.game_engine.old_generation_array = self.game_grid.empty_array
+        self.status_label.text = "Simulation reset"
+        self.game_engine.number_of_generations_passed = 0
+        self.game_engine.old_generation_array = self.game_grid.create_empty_array()
+        self.check_if_reset_successful = True
 
     def on_mouse_press(self, x, y, button, modifiers):
         if(button == pyglet.window.mouse.LEFT):
@@ -313,6 +315,15 @@ class Window():
         self.draw_texture()
 
         self.batch.draw()
+
+        if(self.check_if_reset_successful):
+            if(int(self.generations_passed_label.text) != 0):
+                if(self.debug_state):
+                    print("Reset improperly performed")
+                self.game_engine.number_of_generations_passed = 0
+                self.game_engine.old_generation_array = self.game_grid.create_empty_array()    
+            self.check_if_reset_successful = False
+            
         
         if(self.debug_state):
             print(f"Drawing took {(time.time() - start)*1000:.2f} ms")

@@ -4,7 +4,6 @@ class Grids():
 
     def __init__(self):
         
-        self.empty_array = self.create_empty_array()
         self.glider_gun_array = self.create_glider_gun_array()
 
     def create_empty_array(self):
