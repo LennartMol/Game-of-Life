@@ -1,7 +1,14 @@
 # Game-of-Life
 
 A simple, fast, and interactive implementation of Conway’s Game of Life.  
-The project uses **UV** for dependency and environment management, so no local Python installation is required.
+Supports up to 1260 cell generations per second in a 1024x1024 grid environment. 
+
+The project uses UV for dependency and environment management, so no local Python installation is required.
+
+---
+
+<img width="1226" height="1070" alt="afbeelding" src="https://github.com/user-attachments/assets/fa54a939-0002-41e1-a290-b69a2247b8e6" />
+
 
 ---
 
