@@ -44,9 +44,13 @@ class Window():
         self.FPS_text_input = self.create_FPS_text_input_field()
         self.generations_passed_label = self.create_generations_passed_label()
         self.status_label = self.create_status_label()
+        self.generation_label = self.create_generations_label()
         self.pause_button = self.create_pause_button()
         self.start_button = self.create_start_button()
         self.reset_button = self.create_reset_button()
+        self.ui_outline = self.create_ui_outline()
+        self.simulation_speed_label = self.create_simulation_speed_label()
+        self.instruction_labels = self.create_instruction_labels()
         
         
         # Push and setcustom handlers
@@ -71,11 +75,65 @@ class Window():
         # Debug flag
         self.debug_state = debug
     
+    def create_ui_outline(self):
+        shapes = []
+        shapes.append(pyglet.shapes.Rectangle(0, 0, 5, self.window_height, color=(150, 150, 150), batch=self.batch))
+        shapes.append(pyglet.shapes.Rectangle(195, 0, 5, self.window_height, color=(150, 150, 150), batch=self.batch))
+        shapes.append(pyglet.shapes.Rectangle(0, 0, 200, 5, color=(150, 150, 150), batch=self.batch))
+        shapes.append(pyglet.shapes.Rectangle(0, self.window_height -5, 200, 5, color=(150, 150, 150), batch=self.batch))
+        return shapes
+    
+    def create_instruction_labels(self):
+        instructions = []
+        instructions.append(pyglet.text.Label('How to use',
+                                 font_size=20,
+                                 x=100,
+                                 y=self.window_height - 300,
+                                 anchor_x='center',
+                                 anchor_y='center',
+                                 batch=self.batch))
+        
+        instructions.append(pyglet.text.Label('Left click: Create new cell',
+                                 font_size=12,
+                                 x=100,
+                                 y=self.window_height - 340,
+                                 anchor_x='center',
+                                 anchor_y='center',
+                                 batch=self.batch))
+        
+        instructions.append(pyglet.text.Label('Right click: Remove cell',
+                                 font_size=12,
+                                 x=100,
+                                 y=self.window_height - 360,
+                                 anchor_x='center',
+                                 anchor_y='center',
+                                 batch=self.batch))
+        
+        instructions.append(pyglet.text.Label('Scroll wheel: Zoom in/out',
+                                 font_size=12,
+                                 x=100,
+                                 y=self.window_height - 390,
+                                 anchor_x='center',
+                                 anchor_y='center',
+                                 batch=self.batch))
+        
+        instructions.append(pyglet.text.Label('Hold scroll wheel: Pan',
+                                 font_size=12,
+                                 x=100,
+                                 y=self.window_height - 410,
+                                 anchor_x='center',
+                                 anchor_y='center',
+                                 batch=self.batch))
+        
+
+        
+        return instructions
+
     def create_decrease_fps_button(self):
         self.decrease = pyglet.resource.image("Images/button_minus.png")
         self.decrease.width = self.decrease.height = 40                                                                                                                                
-        return pyglet.gui.PushButton(x=0, 
-                                     y= self.window_height - 50, 
+        return pyglet.gui.PushButton(x=20, 
+                                     y= self.window_height - 250, 
                                      pressed=self.decrease,
                                      unpressed=self.decrease,
                                      batch=self.batch)
@@ -83,8 +141,8 @@ class Window():
     def create_increase_fps_button(self):
         self.increase = pyglet.resource.image("Images/button_plus.png")
         self.increase.width = self.increase.height = 40   
-        return pyglet.gui.PushButton(x=100, 
-                                     y= self.window_height - 50, 
+        return pyglet.gui.PushButton(x=140, 
+                                     y= self.window_height - 250, 
                                      pressed=self.increase,
                                      unpressed=self.increase,
                                      batch=self.batch)
@@ -92,8 +150,8 @@ class Window():
     def create_start_button(self):
         self.start = pyglet.resource.image("Images/button_start.png")
         self.start.width = self.start.height = 40
-        return pyglet.gui.PushButton(x=100,
-                                     y=self.window_height - 200,
+        return pyglet.gui.PushButton(x=80,
+                                     y=self.window_height - 125,
                                      pressed=self.start,
                                      unpressed=self.start,
                                      batch=self.batch)
@@ -101,8 +159,8 @@ class Window():
     def create_pause_button(self):
         self.pause = pyglet.resource.image("Images/button_pause.png")
         self.pause.width = self.pause.height = 40
-        return pyglet.gui.PushButton(x=50,
-                                     y=self.window_height - 200,
+        return pyglet.gui.PushButton(x=30,
+                                     y=self.window_height - 125,
                                      pressed=self.pause,
                                      unpressed=self.pause,
                                      batch=self.batch)
@@ -110,33 +168,51 @@ class Window():
     def create_reset_button(self):
         self.reset = pyglet.resource.image("Images/button_reset.png")
         self.reset.width = self.reset.height = 40
-        return pyglet.gui.PushButton(x=50,
-                                     y=self.window_height - 250,
+        return pyglet.gui.PushButton(x=130,
+                                     y=self.window_height - 125,
                                      pressed=self.reset,
                                      unpressed=self.reset,
                                      batch=self.batch)
         
     def create_FPS_text_input_field(self):
         return pyglet.gui.TextEntry(str(self.game_engine.get_generations_per_second()),
-                                    x= 55,
-                                    y= self.window_height - 35,
-                                    width=40,
+                                    x= 75,
+                                    y= self.window_height - 240,
+                                    width=50,
                                     batch=self.batch)
     
     def create_generations_passed_label(self):
         return pyglet.text.Label('0',
                                  font_size=20,
-                                 x=55,
-                                 y=self.window_height - 55,
+                                 x=100,
+                                 y=self.window_height - 50,
+                                 anchor_x='center',
+                                 anchor_y='center',
+                                 batch=self.batch)
+    
+    def create_generations_label(self):
+        return pyglet.text.Label('Generation',
+                                 font_size=20,
+                                 x=100,
+                                 y=self.window_height - 20,
                                  anchor_x='center',
                                  anchor_y='center',
                                  batch=self.batch)
     
     def create_status_label(self):
         return pyglet.text.Label('Simulation paused',
-                                 font_size=10,
-                                 x=55,
-                                 y=self.window_height - 100,
+                                 font_size=15,
+                                 x=100,
+                                 y=self.window_height - 140,
+                                 anchor_x='center',
+                                 anchor_y='center',
+                                 batch=self.batch)
+    
+    def create_simulation_speed_label(self):
+        return pyglet.text.Label('Simulation speed',
+                                 font_size=15,
+                                 x=100,
+                                 y=self.window_height - 190,
                                  anchor_x='center',
                                  anchor_y='center',
                                  batch=self.batch)
