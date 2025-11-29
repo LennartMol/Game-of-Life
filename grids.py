@@ -4,7 +4,7 @@ class Grids():
 
     def __init__(self):
         
-        self.glider_gun_array = self.create_glider_gun_array()
+        self.glider_gun_array = self.create_glider_gun_array_2()
 
     def create_empty_array(self):
         temp = [[0 for i in range(1024)] for j in range(1024)]
@@ -33,6 +33,44 @@ class Grids():
 
             (3, 35), (4, 35), (3, 36), (4, 36)                    # Rightmost small square
         ]
+
+        for (r, c) in coords:
+            temp_array[r][c] = 1
+        
+        return temp_array
+    
+    def create_glider_gun_array_2(self):
+        temp_array = [[0 for i in range(1024)] for j in range(1024)]
+
+        coords = []
+
+        glider = [
+            (1, 1), (1, 3), (2, 2), (2, 3), (2, 3), (3, 2),                      
+        ]
+
+        coords.extend(glider)
+
+        
+
+        for total_gliders in range(205):
+            
+            temp_glider = glider.copy()
+            
+            for x in range(6):
+                temp_glider[x] = (temp_glider[x][0], temp_glider[x][1] + (total_gliders*5))
+
+            coords.extend(temp_glider)
+
+        for total_y_gliders in range(102):
+
+            for total_gliders in range(205):
+                
+                temp_glider = glider.copy()
+                
+                for x in range(6):
+                    temp_glider[x] = (temp_glider[x][0] + (total_y_gliders*10), temp_glider[x][1] + (total_gliders*5))
+
+                coords.extend(temp_glider)
 
         for (r, c) in coords:
             temp_array[r][c] = 1
